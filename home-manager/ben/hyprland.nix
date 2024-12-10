@@ -119,23 +119,17 @@ in
       ];
 
       general = {
-        gaps_in = 5;
-        gaps_out = 10;
+        gaps_in = 10;
+        gaps_out = 20;
         border_size = 0;
-        resize_on_border = true;
         snap.enabled = true;
-
-        # "col.active_border" = "rgba(0, 0, 0, 0)";
-        # "col.inactive_border" = "rgba(0, 0, 0, 0)";
-        # cursor_inactive_timeout = 10;
+        resize_on_border = true;
+        "col.active_border" = "rgba(0, 0, 0, 1)";
+        "col.inactive_border" = "rgba(0, 0, 0, 1)";
       };
 
       decoration = {
         rounding = 20;
-        # shadow_range = 16;
-        # shadow_render_power = 2;
-        # "col.shadow" = "rgba(000000dd)";
-        # "col.shadow_inactive" = "rgba(00000066)";
         blur = {
           size = 3;
           passes = 3;
@@ -143,6 +137,8 @@ in
         shadow = {
           range = 10;
           render_power = 1;
+          color = "rgba(0, 0, 0, 1.0)";
+          color_inactive = "rgba(0, 0, 0, 0.2)";
         };
       };
 
@@ -162,9 +158,6 @@ in
       };
 
       input = {
-        # sensitivity = -0.1;
-        # numlock_by_default = true;
-        # accel_profile = "adaptive";
         scroll_method = "2fg";
         touchpad.natural_scroll = true;
       };
@@ -195,12 +188,13 @@ in
 
       bind = [
         "$MOD SHIFT,      Q, exit,"
-        "$MOD      , $SPACE, fullscreen,"
+        # "$MOD      , $SPACE, fullscreen,"
+        "          ,    F11, fullscreen,"
         "$MOD      ,      F, togglefloating,"
         "$MOD      ,      C, killactive,"
+        "$MOD      , $ENTER, exec, kitty"
         "$MOD      ,      L, exec, hyprlock"
         "$MOD      ,      S, exec, rofi -show drun"
-        # "$MOD      ,      E, exec, rofi -show filebrowser"
         "$MOD      ,      W, exec, rofi -show window"
         "$MOD      ,      B, exec, ${pkgs.brave}/bin/brave"
         "$MOD      ,      E, exec, ${pkgs.nautilus}/bin/nautilus"

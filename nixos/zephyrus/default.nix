@@ -97,11 +97,11 @@
         PartialBlur = true;
         ScreenWidth = 1920;
         ScreenHeight = 1200;
-        MainColor = "#81451B"; 
-        AccentColor = "#C1855B";
+        MainColor = "#5277C3"; 
+        AccentColor = "#7EBAE4";
         HaveFormBackground = true;
         Background = lib.cleanSource ./sddm-wallpaper.jpg;
-        HeaderText = "Welcome to Nivem\n        󱄅 ";
+        HeaderText = "nivem 󱄅 ";
         Font = "CaskaydiaCove NF";
       };
     };
@@ -141,14 +141,6 @@
   };
 
   environment.systemPackages = with pkgs; [
-    # Aerial SDDM theme dependencies
-    libsForQt5.phonon-backend-gstreamer
-    libsForQt5.qt5.qtgraphicaleffects
-    libsForQt5.qt5.qtquickcontrols
-    libsForQt5.qt5.qtmultimedia
-    gst_all_1.gst-plugins-good
-    gst_all_1.gst-libav
-    # Desktop Applications
     gnome-system-monitor
     gnome-disk-utility
     gnome-calculator
