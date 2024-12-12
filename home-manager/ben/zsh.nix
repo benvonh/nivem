@@ -21,6 +21,7 @@
   };
 
   programs.fzf.enable = true;
+  programs.btop.enable = true;
   programs.zoxide.enable = true;
   programs.starship.enable = true;
 
@@ -45,6 +46,20 @@
       vim = "nvim";
     };
 
+    initExtra = ''
+      function nrn {
+        if [ $# -eq 0 ]; then
+          echo "usage: nrn <package> [<arguments>]"
+          return 1
+        fi
+
+        local pkg="$1"
+        shift
+
+        nix run "nixpkgs#$pkg" -- "$@"
+      }
+    '';
+
     sessionVariables = {
       EDITOR = "nvim";
       OPENER = "bat";
@@ -64,7 +79,7 @@
     mouse = true;
     baseIndex = 1;
     escapeTime = 300;
-    shortcut = "t";
+    shortcut = "v";
     terminal = "screen-256color";
     shell = "${pkgs.zsh}/bin/zsh";
 

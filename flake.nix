@@ -1,5 +1,5 @@
 {
-  description = "Nix flake configurations";
+  description = "My Nix flake configurations for NixOS and Home Manager";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
@@ -41,6 +41,10 @@
     overlays = import ./overlays.nix { inherit inputs; };
 
     nixosConfigurations = {
+      fractal = nixpkgs.lib.nixosSystem {
+        specialArgs = { inherit inputs outputs; };
+        modules = [ ./nixos/fractal ];
+      };
       zephyrus = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs outputs; };
         modules = [ ./nixos/zephyrus ];
@@ -48,7 +52,7 @@
     };
 
     homeConfigurations = {
-      "ben@zephyrus" = home-manager.lib.homeManagerConfiguration {
+      ben = home-manager.lib.homeManagerConfiguration {
         extraSpecialArgs = { inherit inputs outputs; };
         modules = [ ./home-manager/ben ];
         pkgs = pkgsFor.x86_64-linux;

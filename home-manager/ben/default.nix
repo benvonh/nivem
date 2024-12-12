@@ -6,36 +6,49 @@
     ./hyprland.nix
   ];
 
-  nix.package = pkgs.nix;
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  ##################################################
+  #                 BASIC SETTINGS                 #
+  ##################################################
+  nix = {
+    package = pkgs.nix;
+    settings.experimental-features = "nix-command flakes";
+  };
 
-  nixpkgs.overlays = [
-    outputs.overlays.additions
-    outputs.overlays.modifications
-    outputs.overlays.unstable-packages
-  ];
+  nixpkgs = {
+    overlays = [
+      outputs.overlays.additions
+      outputs.overlays.modifications
+      outputs.overlays.unstable-packages
+    ];
+    config.allowUnfree = false;
+  };
 
   fonts.fontconfig = {
     enable = true;
     defaultFonts = {
       serif = [ "Ubuntu Sans" ];
       sansSerif = [ "Ubuntu Sans" ];
-      monospace = [ "Departure Mono" ];
+      monospace = [ "CaskaydiaCove NF" ];
     };
   };
 
+  #################################################
+  #                 USER SETTINGS                 #
+  #################################################
   home = {
     username = "ben";
     homeDirectory = "/home/ben";
     stateVersion = "24.11";
     packages = with pkgs; [
-      nodejs
-      tldr htop ranger
-      wl-clipboard
+      wl-clipboard # Copy-paste in Wayland
+      nodejs # Bunch of things may need it
+      tldr
     ];
   };
 
   programs.home-manager.enable = true;
+  programs.ranger.enable = true;
+  programs.htop.enable = true;
   programs.gh.enable = true;
   programs.git = {
     enable = true;
@@ -51,7 +64,7 @@
     settings.window_padding_width = 4;
     font = {
       size = 12;
-      name = "CaskaydiaCove Nerd Font";
+      name = "CaskaydiaCove NF";
       package = (pkgs.nerdfonts.override {
         fonts = [ "CascadiaCode" ];
       });
@@ -63,7 +76,7 @@
     cycle = false;
     terminal = "kitty";
     package = pkgs.rofi-wayland;
-    font = "CaskaydiaCove Nerd Font";
+    font = "CaskaydiaCove NF";
     theme = ./rofi.rasi;
   };
 

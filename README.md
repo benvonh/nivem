@@ -4,9 +4,9 @@ My Nix flake configurations for NixOS and Home Manager.
 
 Features
 - Hyprland and the Hypr suite;
-- A modern shell experience with Zsh;
+- A modern shell experience in Zsh;
 - Custom Nix packages built from source; and
-- Neovim configured through Nixvim.
+- Neovim configured through the Nixvim module.
 
 TODO: Add screenshots / videos
 
@@ -50,7 +50,7 @@ cd ~/nivem
 nix-shell
 ```
 
-2. Create a NixOS configuration.
+2. Create a NixOS configuration. See [For The Impatient](#for-the-impatient).
 ```bash
 mkdir ~/nivem/nixos/$HOST
 
@@ -60,7 +60,7 @@ cp /etc/nixos/hardware-configuration.nix ~/nivem/nixos/$HOST
 vim ~/nivem/nixos/$HOST/default.nix
 ```
 
-3. Create a Home Manager configuration.
+3. Create a Home Manager configuration. See [For The Impatient](#for-the-impatient).
 ```bash
 mkdir ~/nivem/home-manager/$USER
 
@@ -80,10 +80,11 @@ home-manager switch --flake ~/nivem
 ```
 Append `#$HOST` and `#$USER@$HOST` to the switch commands (no space) if the correct values are not set in the environment variables.
 
+---
 ### For The Impatient
 
-If you want a quick start using my configurations,
-replace the below references to `$USER` and `$HOST` in each of following files.
+If you want a quick start to using my configurations,
+replace the below references, `$USER` and `$HOST`, in each of the files.
 
 **NixOS**
 
@@ -125,7 +126,7 @@ home = {
 };
 ```
 
-:warning: Make sure to change personal settings such as Git username and imported NixOS hardware module.
+:warning: Make sure to change personal settings such as Git username and imported NixOS hardware modules.
 
 ---
 Special thanks to [Misterio77](https://github.com/misterio77) for creating the [nix-starter-configs](https://github.com/misterio77/nix-starter-configs)!

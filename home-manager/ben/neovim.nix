@@ -10,7 +10,6 @@
     colorschemes = {
       gruvbox.enable = true;
       onedark.enable = true;
-      kanagawa.enable = true;
       tokyonight.enable = true;
       catppuccin = {
         enable = true;
@@ -108,11 +107,11 @@
 
       { mode = "n"; key = "<leader>q"; action = "<cmd>q<cr>"; options.desc = "Quit buffer"; }
       { mode = "n"; key = "<leader>w"; action = "<cmd>w<cr>"; options.desc = "Write buffer"; }
-      { mode = "n"; key = "<leader>a"; action = "<cmd>qa<cr>"; options.desc = "Abandon"; }
+      { mode = "n"; key = "<leader>a"; action = "<cmd>qa<cr>"; options.desc = "Quit all"; }
       { mode = "n"; key = "<leader>s"; action = "<cmd>wa<cr>"; options.desc = "Save all"; }
       { mode = "n"; key = "<leader>v"; action = "<cmd>vsplit<cr>"; options.desc = "Split pane"; }
       { mode = "n"; key = "<leader>t"; action = "<cmd>vsplit<bar>terminal<cr>"; options.desc = "Open terminal"; }
-      { mode = "n"; key = "<leader>b"; action = "<cmd>bp<bar>sp<bar>bn<bar>bd<cr>"; options.desc = "Clean buffer"; }
+      { mode = "n"; key = "<leader>c"; action = "<cmd>bp<bar>sp<bar>bn<bar>bd<cr>"; options.desc = "Close buffer"; }
 
       # TODO: More telescope commands that I can add :)
       { mode = "n"; key = "<leader>o"; action = "<cmd>TodoTelescope<cr>"; options.desc = "Search TODO"; }
@@ -122,6 +121,8 @@
       { mode = "n"; key = "<leader>h"; action = "<cmd>Noice history<cr>"; options.desc = "Show message history"; }
       { mode = "n"; key = "<leader>e"; action = "<cmd>NvimTreeToggle<cr>"; options.desc = "Toggle file explorer"; }
       { mode = "n"; key = "<leader>m"; action = "<cmd>MarkdownPreviewToggle<cr>"; options.desc = "Toggle markdown preview"; }
+      { mode = "n"; key = "<leader>z"; action = "<cmd>set laststatus=0 ruler<cr>"; options.desc = "Hide status bar"; }
+      { mode = "n"; key = "<leader>u"; action = "<cmd>lua require('lualine').hide({unhide=true})<cr>"; options.desc = "Show status bar"; }
       { mode = "n"; key = "<leader>xd"; action = "<cmd>Trouble diagnostics toggle<cr>"; options.desc = "Workspace Diagnostics"; }
       { mode = "n"; key = "<leader>xb"; action = "<cmd>Trouble diagnostics toggle filter.buf=0<cr>"; options.desc = "Buffer Diagnostics"; }
       { mode = "n"; key = "<leader>xl"; action = "<cmd>Trouble lsp toggle focus=false win.position=right<cr>"; options.desc = "LSP"; }
@@ -134,6 +135,7 @@
     #                 PLUG-INS                 #
     ############################################
     plugins.comment.enable = true;
+    plugins.fugitive.enable = true;
     plugins.lastplace.enable = true;
     plugins.markdown-preview.enable = true;
     plugins.nix.enable = true;
@@ -147,7 +149,6 @@
     plugins.web-devicons.enable = true;
     plugins.which-key.enable = true;
 
-    # FIXME: Not working as intended, I'm pretty sure
     plugins.auto-session = {
       enable = true;
       settings = {
@@ -171,6 +172,22 @@
       ];
     };
 
+    plugins.dashboard = {
+      enable = true;
+      settings.config = {
+        project.enable = false;
+        footer = [ " neovim powered by nix  " ];
+        header = [
+          "███╗   ██╗██╗██╗  ██╗██╗   ██╗██╗███╗   ███╗"
+          "████╗  ██║██║╚██╗██╔╝██║   ██║██║████╗ ████║"
+          "██╔██╗ ██║██║ ╚███╔╝ ██║   ██║██║██╔████╔██║"
+          "██║╚██╗██║██║ ██╔██╗ ╚██╗ ██╔╝██║██║╚██╔╝██║"
+          "██║ ╚████║██║██╔╝ ██╗ ╚████╔╝ ██║██║ ╚═╝ ██║"
+          "╚═╝  ╚═══╝╚═╝╚═╝  ╚═╝  ╚═══╝  ╚═╝╚═╝     ╚═╝"
+        ];
+      };
+    };
+
     plugins.lualine = {
       enable = true;
       settings.options = {
@@ -187,9 +204,9 @@
       settings.lsp = {
         progress.enabled = false;
         override = {
-          "['cmp.entry.get_documentation']" = true;
-          "['vim.lsp.util.stylize_markdown']" = true;
-          "['vim.lsp.util.convert_input_to_markdown_lines']" = true;
+          "cmp.entry.get_documentation" = true;
+          "vim.lsp.util.stylize_markdown" = true;
+          "vim.lsp.util.convert_input_to_markdown_lines" = true;
         };
       };
     };
@@ -223,6 +240,7 @@
         indent.char = "▏";
         scope.show_end = false;
         scope.show_start = false;
+        exclude.filetypes = [ "dashboard" ];
       };
     };
 

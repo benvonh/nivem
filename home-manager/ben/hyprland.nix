@@ -15,7 +15,7 @@ in
       package = cursorPkg;
     };
     font = {
-      size = 11;
+      size = 12;
       name = "Ubuntu Sans";
       package = pkgs.ubuntu-sans;
     };
@@ -29,12 +29,32 @@ in
     };
   };
 
+  home = {
+    pointerCursor = {
+      gtk.enable = true;
+      size = cursorSize;
+      name = cursorName;
+      package = cursorPkg;
+    };
+    packages = with pkgs; [
+      # FIXME: Does not work from HyprBar
+      grimblast # Helper for screenshots within Hyprland, based on grimshot
+      gpu-screen-recorder-gtk # Screen recorder that has minimal impact on system performance by recording a window using the GPU only
+
+      hyprwall # GUI for setting wallpapers with hyprpaper
+      hyprpicker # Wlroots-compatible Wayland color picker that does not suck
+      # NOTE: Waiting for updates
+      hyprlauncher # GUI for launching applications, written in Rust
+     (nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
+    ];
+  };
+
   xdg.dataFile.images.source = ./images;
 
   services.hyprpaper = {
     enable = true;
     settings = {
-      ipc = false;
+      ipc = true;
       preload = [ "${config.xdg.dataFile.images.target}/maplestory.png" ];
       wallpaper = [ "eDP-2, ${config.xdg.dataFile.images.target}/maplestory.png" ];
     };
@@ -49,16 +69,6 @@ in
         after_sleep_cmd = "hyprctl dispatch dpms on";
       };
       listener = [
-        { # Dim screen after 5 minutes
-          timeout = 300;
-          on-timeout = "${pkgs.brightnessctl}/bin/brightnessctl -s set 10";
-          on-resume = "${pkgs.brightnessctl}/bin/brightnessctl -r";
-        }
-        { # Turn off keyboard backlight after 5 minutes
-          timeout = 300;
-          on-timeout = "${pkgs.brightnessctl}/bin/brightnessctl -sd asus::kbd_backlight set 0";
-          on-resume = "${pkgs.brightnessctl}/bin/brightnessctl -rd asus::kbd_backlight";
-        }
         { # Lock computer after 10 minutes
           timeout = 600;
           on-timeout = "loginctl lock-session";
@@ -76,7 +86,7 @@ in
     enable = true;
     settings = {
       image = {
-        position = "0, 220";
+        position = "0, 180";
         border_color = "rgba(0, 0, 0, 0)";
         path = "${config.xdg.dataFile.images.target}/nix-snowflake-colours.png";
       };
@@ -84,12 +94,12 @@ in
         fade_on_empty = false;
         outline_thickness = 2;
         placeholder_text = "";
-        outer_color = "rgba(0, 0, 0, 0.5)";
-        inner_color = "rgba(0, 0, 0, 0.5)";
+        outer_color = "rgba(0, 0, 0, 0.2)";
+        inner_color = "rgba(0, 0, 0, 0.2)";
         check_color = "rgb(126, 186, 228)";
         fail_color = "rgb(255, 0, 0)";
         font_color = "rgb(82, 119, 195)";
-        position = "0, -220";
+        position = "0, -180";
         size = "320, 40";
       };
       background = {
@@ -104,13 +114,24 @@ in
   wayland.windowManager.hyprland = {
     enable = true;
     settings = {
-      monitor = "${display}, 1920x1200@144, 0x0, 1";
-      layerrule = "blur, gtk-layer-shell";
+      monitor = [
+        ", preferred, auto, 1"
+        "${display}, 1920x1200@144, 0x0, 1"
+      ];
+
+      layerrule = [
+        "blur, rofi"
+        "blur, bar-0"
+        "blur, logout_dialog"
+        "blur, notifications-window"
+      ];
 
       env = [
         "GTK_THEME, Colloid-Dark"
         "XCURSOR_THEME, ${cursorName}"
         "XCURSOR_SIZE, ${toString cursorSize}"
+        "HYPRCURSOR_THEME, ${cursorName}"
+        "HYPRCURSOR_SIZE, ${toString cursorSize}"
       ];
 
       exec-once = [
@@ -122,23 +143,22 @@ in
         gaps_in = 10;
         gaps_out = 20;
         border_size = 0;
-        snap.enabled = true;
         resize_on_border = true;
-        "col.active_border" = "rgba(0, 0, 0, 1)";
-        "col.inactive_border" = "rgba(0, 0, 0, 1)";
       };
 
       decoration = {
-        rounding = 20;
+        # NOTE: Floatin hints get rounded, too, which also have borders
+        # NOTE: Floating windows (e.g., hints) also get rounded which can look weird
+        rounding = 0;
         blur = {
           size = 3;
           passes = 3;
         };
         shadow = {
-          range = 10;
-          render_power = 1;
+          range = 20;
+          render_power = 2;
           color = "rgba(0, 0, 0, 1.0)";
-          color_inactive = "rgba(0, 0, 0, 0.2)";
+          color_inactive = "rgba(0, 0, 0, 0.25)";
         };
       };
 
@@ -151,7 +171,6 @@ in
           "windowsIn       , 1, 2, jiggle, popin"
           "windowsMove     , 1, 2, jiggle, slide"
           "workspaces      , 1, 2, jiggle, slide"
-          "specialWorkspace, 1, 2, jiggle, slidevert"
           "fadeOut   , 1, 2, close"
           "windowsOut, 1, 2, close, popin"
         ];
@@ -177,65 +196,68 @@ in
         new_window_takes_over_fullscreen = 2;
       };
 
+      dwindle = {
+        pseudotile = true;
+        force_split = 2;
+      };
+
       windowrulev2 = [
         "opacity 0.9 override 0.9 override 0.9, class:kitty"
         "opacity 0.9 override 0.9 override 0.9, class:neovide"
       ];
 
-      "$MOD" = "SUPER";
       "$ENTER" = 36;
       "$SPACE" = 65;
 
       bind = [
-        "$MOD SHIFT,      Q, exit,"
-        # "$MOD      , $SPACE, fullscreen,"
-        "          ,    F11, fullscreen,"
-        "$MOD      ,      F, togglefloating,"
-        "$MOD      ,      C, killactive,"
-        "$MOD      , $ENTER, exec, kitty"
-        "$MOD      ,      L, exec, hyprlock"
-        "$MOD      ,      S, exec, rofi -show drun"
-        "$MOD      ,      W, exec, rofi -show window"
-        "$MOD      ,      B, exec, ${pkgs.brave}/bin/brave"
-        "$MOD      ,      E, exec, ${pkgs.nautilus}/bin/nautilus"
+        "     ,    F10, togglefloating,"
+        "     ,    F11, fullscreen,"
+        "SUPER,      C, killactive,"
+        "SUPER, $ENTER, exec, ${pkgs.kitty}/bin/kitty"
+        "SUPER,      B, exec, ${pkgs.brave}/bin/brave"
+        "SUPER,      I, exec, ${pkgs.neovide}/bin/neovide"
+        "SUPER,      F, exec, ${pkgs.nautilus}/bin/nautilus"
+        "SUPER,      L, exec, ${pkgs.hyprlock}/bin/hyprlock"
+        "SUPER, $SPACE, exec, ${pkgs.rofi-wayland}/bin/rofi -show drun"
+        "SUPER,    TAB, exec, ${pkgs.rofi-wayland}/bin/rofi -show window"
  
-        "ALT      ,      J, layoutmsg, cyclenext"
-        "ALT      ,      K, layoutmsg, cycleprev"
-        "ALT      ,      I, layoutmsg, addmaster"
-        "ALT      ,      D, layoutmsg, removemaster"
-        "ALT SHIFT,      J, layoutmsg, swapnext"
-        "ALT SHIFT,      K, layoutmsg, swapprev"
-        "ALT SHIFT,      I, layoutmsg, orientationnext"
-        "ALT SHIFT,      D, layoutmsg, orientationprev"
-        "ALT SHIFT, $ENTER, layoutmsg, swapwithmaster"
+        # master layout key binding
+        # "SUPER      ,      J, layoutmsg, cyclenext"
+        # "SUPER      ,      K, layoutmsg, cycleprev"
+        # "SUPER      ,      I, layoutmsg, addmaster"
+        # "SUPER      ,      D, layoutmsg, removemaster"
+        # "SUPER SHIFT,      J, layoutmsg, swapnext"
+        # "SUPER SHIFT,      K, layoutmsg, swapprev"
+        # "SUPER SHIFT,      I, layoutmsg, orientationnext"
+        # "SUPER SHIFT,      D, layoutmsg, orientationprev"
+        # "SUPER SHIFT, $ENTER, layoutmsg, swapwithmaster"
 
-        "ALT      ,   S, togglespecialworkspace,"
-        "ALT SHIFT,   S, movetoworkspace, special"
-        "ALT      , TAB, workspace            , e+1"
-        "ALT      ,   1, workspace            , 1"
-        "ALT      ,   2, workspace            , 2"
-        "ALT      ,   3, workspace            , 3"
-        "ALT      ,   4, workspace            , 4"
-        "ALT      ,   5, workspace            , 5"
-        "ALT SHIFT,   1, movetoworkspacesilent, 1"
-        "ALT SHIFT,   2, movetoworkspacesilent, 2"
-        "ALT SHIFT,   3, movetoworkspacesilent, 3"
-        "ALT SHIFT,   4, movetoworkspacesilent, 4"
-        "ALT SHIFT,   5, movetoworkspacesilent, 5"
+        # scratch pad key binding
+        # "SUPER      ,   S, togglespecialworkspace,"
+        # "SUPER SHIFT,   S, movetoworkspace, special"
+
+        "ALT        ,    TAB,             workspace, e+1"
+        "SUPER      ,      1,             workspace, 1"
+        "SUPER      ,      2,             workspace, 2"
+        "SUPER      ,      3,             workspace, 3"
+        "SUPER      ,      4,             workspace, 4"
+        "SUPER      ,      5,             workspace, 5"
+        "SUPER SHIFT,      1, movetoworkspacesilent, 1"
+        "SUPER SHIFT,      2, movetoworkspacesilent, 2"
+        "SUPER SHIFT,      3, movetoworkspacesilent, 3"
+        "SUPER SHIFT,      4, movetoworkspacesilent, 4"
+        "SUPER SHIFT,      5, movetoworkspacesilent, 5"
+        "SUPER SHIFT, $ENTER,             layoutmsg, swapsplit"
 
         ", XF86AudioRaiseVolume , exec, ${pkgs.pamixer}/bin/pamixer -i 10"
         ", XF86AudioLowerVolume , exec, ${pkgs.pamixer}/bin/pamixer -d 10"
         ", XF86AudioMute        , exec, ${pkgs.pamixer}/bin/pamixer -t"
         ", XF86AudioMicMute     , exec, ${pkgs.pamixer}/bin/pamixer --default-source -t"
-        ", XF86MonBrightnessUp  , exec, ${pkgs.brightnessctl}/bin/brightnessctl set +10%"
-        ", XF86MonBrightnessDown, exec, ${pkgs.brightnessctl}/bin/brightnessctl set 10%-"
-        ", XF86KbdBrightnessUp  , exec, ${pkgs.brightnessctl}/bin/brightnessctl -d asus::kbd_backlight set +1"
-        ", XF86KbdBrightnessDown, exec, ${pkgs.brightnessctl}/bin/brightnessctl -d asus::kbd_backlight set 1-"
       ];
 
       bindm = [
-        "$MOD, mouse:272, movewindow"
-        "$MOD, mouse:273, resizewindow"
+        "$SUPER, mouse:272, movewindow"
+        "$SUPER, mouse:273, resizewindow"
       ];
     };
   };
