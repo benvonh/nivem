@@ -112,6 +112,11 @@
   security.rtkit.enable = true;
   hardware.pulseaudio.enable = false;
 
+  # NVIDIA
+  # hardware.graphics.enable = true;
+  services.xserver.videoDrivers = [ "nvidia" ];
+  hardware.nvidia.open = true;
+
   ####################################################
   #                 USER APPLICATION                 #
   ####################################################
@@ -121,6 +126,8 @@
     isNormalUser = true;
     extraGroups = [
       "networkmanager"
+      "plugdev"
+      "input"
       "wheel"
     ];
   };

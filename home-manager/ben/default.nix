@@ -20,7 +20,7 @@
       outputs.overlays.modifications
       outputs.overlays.unstable-packages
     ];
-    config.allowUnfree = false;
+    config.allowUnfree = true;
   };
 
   fonts.fontconfig = {

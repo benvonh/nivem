@@ -56,7 +56,7 @@ in
     settings = {
       ipc = true;
       preload = [ "${config.xdg.dataFile.images.target}/maplestory.png" ];
-      wallpaper = [ "eDP-2, ${config.xdg.dataFile.images.target}/maplestory.png" ];
+      wallpaper = [ "DP-2, ${config.xdg.dataFile.images.target}/maplestory.png" ];
     };
   };
 
@@ -116,7 +116,7 @@ in
     settings = {
       monitor = [
         ", preferred, auto, 1"
-        "${display}, 1920x1200@144, 0x0, 1"
+        "DP-2, 1920x1080@144, 0x0, 1"
       ];
 
       layerrule = [
