@@ -1,16 +1,12 @@
 { inputs, outputs, lib, config, pkgs, ... }:
 {
-  imports = [
-    ./zsh.nix
-    ./neovim.nix
-    ./hyprland.nix
-  ];
+  imports = [ ./zsh.nix ./neovim.nix ];
 
   ##################################################
   #                 BASIC SETTINGS                 #
   ##################################################
   nix = {
-    package = pkgs.nix;
+    package = lib.mkDefault pkgs.nix;
     settings.experimental-features = "nix-command flakes";
   };
 
@@ -46,6 +42,15 @@
     ];
   };
 
+  programs.rofi = {
+    enable = true;
+    cycle = false;
+    terminal = "kitty";
+    package = pkgs.rofi-wayland;
+    font = "CaskaydiaCove NF";
+    theme = ./rofi.rasi;
+  };
+
   programs.home-manager.enable = true;
   programs.ranger.enable = true;
   programs.htop.enable = true;
@@ -55,7 +60,6 @@
     userName = "benvonh";
     userEmail = "benjaminvonsnarski@gmail.com";
   };
-
 
   programs.kitty = {
     enable = true;
@@ -70,15 +74,4 @@
       });
     };
   };
-
-  programs.rofi = {
-    enable = true;
-    cycle = false;
-    terminal = "kitty";
-    package = pkgs.rofi-wayland;
-    font = "CaskaydiaCove NF";
-    theme = ./rofi.rasi;
-  };
-
-  systemd.user.startServices = "sd-switch";
 }

@@ -43,11 +43,11 @@
     nixosConfigurations = {
       fractal = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs outputs; };
-        modules = [ ./nixos/fractal ];
+        modules = [ ./nixos/core ./nixos/fractal ];
       };
       zephyrus = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs outputs; };
-        modules = [ ./nixos/zephyrus ];
+        modules = [ ./nixos/core ./nixos/zephyrus ];
       };
     };
 

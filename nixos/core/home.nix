@@ -1,12 +1,22 @@
-{ inputs, config, pkgs, ... }:
+{ inputs, config, pkgs, host, ... }:
 let
-  display = "eDP-2";
-  
+  displayForHost = {
+    fractal = "DP-2";
+    zephyrus = "eDP-2";
+  };
+
+  display = if builtins.hasAttr host displayForHost then
+    builtins.getAttr host displayForHost
+  else
+    builtins.trace "WARNING: Unknown host to configure for in Hyprland" "";
+
   cursorPkg = pkgs.bibata-cursors;
   cursorName = "Bibata-Modern-Ice";
   cursorSize = 24;
 in
 {
+  imports = [ ../../home-manager/ben ];
+
   gtk = {
     enable = true;
     cursorTheme = {
@@ -49,14 +59,15 @@ in
     ];
   };
 
-  xdg.dataFile.images.source = ./images;
+  xdg.dataFile.assets.source = ./assets;
 
   services.hyprpaper = {
     enable = true;
     settings = {
       ipc = true;
-      preload = [ "${config.xdg.dataFile.images.target}/maplestory.png" ];
-      wallpaper = [ "DP-2, ${config.xdg.dataFile.images.target}/maplestory.png" ];
+      splash = false;
+      preload = [ "${config.xdg.dataFile.assets.target}/maplestory.png" ];
+      wallpaper = [ "${display}, ${config.xdg.dataFile.assets.target}/maplestory.png" ];
     };
   };
 
@@ -88,7 +99,7 @@ in
       image = {
         position = "0, 180";
         border_color = "rgba(0, 0, 0, 0)";
-        path = "${config.xdg.dataFile.images.target}/nix-snowflake-colours.png";
+        path = "${config.xdg.dataFile.assets.target}/nix-snowflake-colours.png";
       };
       input-field = {
         fade_on_empty = false;
@@ -115,8 +126,8 @@ in
     enable = true;
     settings = {
       monitor = [
+        "${display}, highrr, auto, 1"
         ", preferred, auto, 1"
-        "DP-2, 1920x1080@144, 0x0, 1"
       ];
 
       layerrule = [
@@ -218,7 +229,7 @@ in
         "SUPER,      I, exec, ${pkgs.neovide}/bin/neovide"
         "SUPER,      F, exec, ${pkgs.nautilus}/bin/nautilus"
         "SUPER,      L, exec, ${pkgs.hyprlock}/bin/hyprlock"
-        "SUPER, $SPACE, exec, ${pkgs.rofi-wayland}/bin/rofi -show drun"
+        "SUPER,      [, exec, ${pkgs.rofi-wayland}/bin/rofi -show drun"
         "SUPER,    TAB, exec, ${pkgs.rofi-wayland}/bin/rofi -show window"
  
         # master layout key binding
@@ -261,4 +272,6 @@ in
       ];
     };
   };
+
+  systemd.user.startServices = "sd-switch";
 }

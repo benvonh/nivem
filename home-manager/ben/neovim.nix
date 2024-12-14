@@ -142,6 +142,7 @@
     plugins.notify.enable = true;
     plugins.nvim-colorizer.enable = true;
     plugins.rainbow-delimiters.enable = true;
+    plugins.scrollview.enable = true;
     plugins.tmux-navigator.enable = true;
     plugins.todo-comments.enable = true;
     plugins.treesitter.enable = true;
