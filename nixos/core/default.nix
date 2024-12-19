@@ -1,16 +1,13 @@
 { inputs, outputs, lib, config, pkgs, ... }:
+let
+  host = config.networking.hostName;
+in
 {
   imports = [
     inputs.sugar-candy.nixosModules.default
     inputs.home-manager.nixosModules.home-manager
   ];
   
-  home-manager.users.ben.imports = [ ./home.nix ];
-  home-manager.extraSpecialArgs = {
-    host = config.networking.hostName;
-    inherit inputs outputs;
-  };
-
   ################################################
   #                 NIX SETTINGS                 #
   ################################################
@@ -62,29 +59,18 @@
 
   networking.networkmanager.enable = true;
 
-  ###############################################
-  #                 BOOT LOADER                 #
-  ###############################################
   boot.loader = {
     systemd-boot.enable = true;
     systemd-boot.configurationLimit = 3;
     efi.canTouchEfiVariables = true;
   };
 
-  # TODO: Do I want?
-  # boot.plymouth = {
-  #   enable = true;
-  #   theme = "colorful_loop";
-  #   themePackages = [
-  #     (pkgs.adi1090x-plymouth-themes.override {
-  #       selected_themes = [ "colorful_loop" ];
-  #     })
-  #   ];
-  # };
-
   ############################################
   #                 SERVICES                 #
   ############################################
+  services.gvfs.enable = true;
+  services.hypridle.enable = true;
+
   services.pipewire = {
     enable = true;
     alsa.enable = true;
@@ -96,22 +82,30 @@
     wayland.enable = true;
     sugarCandyNix = {
       enable = true;
-      settings = {
-        # TODO: Check if this is good
+      settings = let
+        resolutionForHost = {
+          fractal = { w = 1920; h = 1080; };
+          zephyrus = { w = 1920; h = 1200; };
+        };
+
+        resolution = if builtins.hasAttr host resolutionForHost then
+         builtins.getAttr host resolutionForHost
+        else throw ''
+          nivem unknown host '${host}' for resolution
+          <services.displayManager.sddm.sugarCandyNix.settings>
+          (see ./nixos/core/default.nix)
+        '';
+      in {
         PartialBlur = true;
-        # FullBlur = true;
-        # BlurRadius = 35;
-        ScreenWidth = 1920;
-        ScreenHeight = 1200;
-        # MainColor = "#7EBAE4"; 
-        MainColor = "#B3BEC7"; 
-        AccentColor = "#F2F2E9";
-        BackgroundColor = "#000000";
-        # ScaleImageCropped = false;
         HaveFormBackground = true;
-        Background = lib.cleanSource ./assets/norway-river.jpg;
+        ScreenWidth = resolution.w;
+        ScreenHeight = resolution.h;
+        MainColor = "#CFDBE5"; 
+        AccentColor = "#CFDBE5";
+        BackgroundColor = "#000000";
         HeaderText = "nivem";
         Font = "CaskaydiaCove NF";
+        Background = lib.cleanSource ./assets/norway-river.jpg;
       };
     };
   };
@@ -122,6 +116,12 @@
   ####################################################
   #                 USER APPLICATION                 #
   ####################################################
+  home-manager = {
+    users.ben.imports = [ ./home.nix ../../home-manager/ben ];
+    extraSpecialArgs = { inherit inputs outputs; host = host; };
+    backupFileExtension = "backup";
+  };
+
   users.users.ben = {
     shell = pkgs.zsh;
     home = "/home/ben";
@@ -132,41 +132,49 @@
     ];
   };
 
-  # NOTE: `fc-cache -r`
-  # FIXME: Ubuntu Sans is meh
+  # NOTE: fontconfig tips...
+  # fc-cache -r
+  # fc-list | bat
+  # fc-match 'font name'
   fonts = {
     packages = with pkgs; [
-      ubuntu-sans
-     (nerdfonts.override {
-      fonts = [ "CascadiaCode" ];
-     })
+      (nerdfonts.override { fonts = [ "CascadiaCode" ]; })
+      noto-fonts-monochrome-emoji
+      noto-fonts-emoji-blob-bin
+      noto-fonts-color-emoji
+      noto-fonts-cjk-serif
+      noto-fonts-cjk-sans
+      noto-fonts-lgc-plus
+      noto-fonts
     ];
     fontconfig.defaultFonts = {
-      serif = [ "Ubuntu Sans" ];
-      sansSerif = [ "Ubuntu Sans" ];
       monospace = [ "CaskaydiaCove NF" ];
+      sansSerif = [ "Noto Sans" ];
+      serif = [ "Noto Serif" ];
     };
   };
 
   environment.systemPackages = with pkgs; [
     libsForQt5.qt5.qtgraphicaleffects
-    # FIXME:
-    # gnome-system-monitor
-    # gnome-disk-utility
-    # gnome-calculator
-    # youtube-music
-    # obs-studio
-    # celluloid
-    # nautilus
-    # neovide 
-    # discord 
-    # brave 
+    # TODO: Where is the best place for these?
+    gnome-system-monitor
+    gnome-disk-utility
+    gnome-calculator
+    youtube-music
+    obs-studio
+    celluloid
+    libnotify
+    nautilus
+    neovide 
+    discord 
+    brave 
   ];
 
-  programs.vim.enable = true;
   programs.git.enable = true;
+  programs.vim.enable = true;
   programs.zsh.enable = true;
   programs.hyprland.enable = true;
+  programs.hyprlock.enable = true;
   programs.nm-applet.enable = true;
 
   # We don't use nano here...

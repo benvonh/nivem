@@ -19,14 +19,15 @@
     config.allowUnfree = true;
   };
 
-  fonts.fontconfig = {
-    enable = true;
-    defaultFonts = {
-      serif = [ "Ubuntu Sans" ];
-      sansSerif = [ "Ubuntu Sans" ];
-      monospace = [ "CaskaydiaCove NF" ];
-    };
-  };
+  # TODO: Maybe only needed in NixOS config?
+  # fonts.fontconfig = {
+  #   enable = true;
+  #   defaultFonts = {
+  #     serif = [ "Ubuntu Sans" ];
+  #     sansSerif = [ "Ubuntu Sans" ];
+  #     monospace = [ "CaskaydiaCove NF" ];
+  #   };
+  # };
 
   #################################################
   #                 USER SETTINGS                 #
@@ -39,6 +40,9 @@
       wl-clipboard # Copy-paste in Wayland
       nodejs # Bunch of things may need it
       tldr
+      # FIXME: Is it needed?
+      # For ranger image preview
+      # python3Packages.pillow
     ];
   };
 
@@ -52,7 +56,16 @@
   };
 
   programs.home-manager.enable = true;
-  programs.ranger.enable = true;
+
+  programs.ranger = {
+    enable = true;
+    settings = {
+      preview_images = true;
+      preview_images_method = "kitty";
+      draw_borders = "both";
+    };
+  };
+
   programs.htop.enable = true;
   programs.gh.enable = true;
   programs.git = {
@@ -65,13 +78,15 @@
     enable = true;
     themeFile = "Catppuccin-Mocha";
     shellIntegration.mode = "no-cursor";
-    settings.window_padding_width = 4;
+    settings.window_padding_width = 8;
     font = {
-      size = 12;
-      name = "CaskaydiaCove NF";
-      package = (pkgs.nerdfonts.override {
-        fonts = [ "CascadiaCode" ];
-      });
+      size = 11;
+      name = "Departure Mono";
+      package = pkgs.departure-mono;
+      # name = "CaskaydiaCove NF";
+      # package = (pkgs.nerdfonts.override {
+      #   fonts = [ "CascadiaCode" ];
+      # });
     };
   };
 }

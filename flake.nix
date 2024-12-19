@@ -1,5 +1,5 @@
 {
-  description = "My Nix flake configurations for NixOS and Home Manager";
+  description = "A mechatronic engineer's NixOS and Home Manager configuration";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
@@ -12,8 +12,9 @@
     nixvim.inputs.nixpkgs.follows = "nixpkgs";
 
     hyprpanel.url = "github:jas-singhfsu/hyprpanel";
-    sugar-candy.url = "github:zhaith-izaliel/sddm-sugar-candy-nix";
+    hyprpanel.inputs.nixpkgs.follows = "nixpkgs";
 
+    sugar-candy.url = "github:zhaith-izaliel/sddm-sugar-candy-nix";
     hardware.url = "github:nixos/nixos-hardware";
   };
 

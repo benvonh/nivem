@@ -1,3 +1,4 @@
+# TODO: programs.ranger
 { config, pkgs, ... }:
 {
   home.packages = [
@@ -58,10 +59,27 @@
 
         nix run "nixpkgs#$pkg" -- "$@"
       }
+      
+      function nbn {
+        if [ $# -ne 1 ]; then
+          echo "usage: nbn <package>"
+          return 1
+        fi
+
+        nix build "nixpkgs#$1"
+      }
+
+      function ndn {
+        if [ $# -ne 1 ]; then
+          echo "usage: ndn <package>"
+          return 1
+        fi
+
+        nix develop "nixpkgs#$1"
+      }
     '';
 
     sessionVariables = {
-      EDITOR = "nvim";
       OPENER = "bat";
       PAGER = "bat --force-colorization --paging=always --style=full";
     };
@@ -79,7 +97,7 @@
     mouse = true;
     baseIndex = 1;
     escapeTime = 300;
-    shortcut = "v";
+    # shortcut = "v";
     terminal = "screen-256color";
     shell = "${pkgs.zsh}/bin/zsh";
 

@@ -1,4 +1,4 @@
-{ inputs, config, pkgs, host, ... }:
+{ inputs, pkgs, host, ... }:
 let
   displayForHost = {
     fractal = "DP-2";
@@ -7,35 +7,45 @@ let
 
   display = if builtins.hasAttr host displayForHost then
     builtins.getAttr host displayForHost
-  else
-    builtins.trace "WARNING: Unknown host to configure for in Hyprland" "";
+  else throw ''
+    nivem unknown host '${host}' for display
+    (see ./nixos/core/home.nix)
+  '';
+
+  themePkg = pkgs.colloid-gtk-theme;
+  themeName = "Colloid-Dark";
+
+  iconPkg = pkgs.papirus-icon-theme;
+  iconName = "Papirus-Dark";
 
   cursorPkg = pkgs.bibata-cursors;
   cursorName = "Bibata-Modern-Ice";
-  cursorSize = 24;
+  cursorSize = 20;
 in
 {
-  imports = [ ../../home-manager/ben ];
+  systemd.user.startServices = "sd-switch";
 
+  ##########################################
+  #                 THEMES                 #
+  ##########################################
   gtk = {
     enable = true;
+    theme = {
+      name = themeName;
+      package = themePkg;
+    };
+    iconTheme = {
+      name = iconName;
+      package = iconPkg;
+    };
     cursorTheme = {
       size = cursorSize;
       name = cursorName;
       package = cursorPkg;
     };
     font = {
-      size = 12;
-      name = "Ubuntu Sans";
-      package = pkgs.ubuntu-sans;
-    };
-    iconTheme = {
-      name = "Papirus-Dark";
-      package = pkgs.papirus-icon-theme;
-    };
-    theme = {
-      name = "Colloid-Dark";
-      package = pkgs.colloid-gtk-theme;
+      size = 11;
+      name = "Sans";
     };
   };
 
@@ -47,30 +57,29 @@ in
       package = cursorPkg;
     };
     packages = with pkgs; [
-      # FIXME: Does not work from HyprBar
-      grimblast # Helper for screenshots within Hyprland, based on grimshot
-      gpu-screen-recorder-gtk # Screen recorder that has minimal impact on system performance by recording a window using the GPU only
+      # TODO: Help create a Home Manager module for it?
+      ulauncher
 
-      hyprwall # GUI for setting wallpapers with hyprpaper
-      hyprpicker # Wlroots-compatible Wayland color picker that does not suck
-      # NOTE: Waiting for updates
-      hyprlauncher # GUI for launching applications, written in Rust
+      # NOTE: Waiting to be added to nixpkgs
+      inputs.hyprpanel.packages.${pkgs.system}.default
      (nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
     ];
   };
 
-  xdg.dataFile.assets.source = ./assets;
+  # FIXME: HyprPanel can set wallpaper?
+  # services.hyprpaper = {
+  #   enable = true;
+  #   settings = {
+  #     ipc = true;
+  #     splash = false;
+  #     preload = [ "${./assets/maplestory.png}" ];
+  #     wallpaper = [ "${display}, ${./assets/maplestory.png}" ];
+  #   };
+  # };
 
-  services.hyprpaper = {
-    enable = true;
-    settings = {
-      ipc = true;
-      splash = false;
-      preload = [ "${config.xdg.dataFile.assets.target}/maplestory.png" ];
-      wallpaper = [ "${display}, ${config.xdg.dataFile.assets.target}/maplestory.png" ];
-    };
-  };
-
+  #########################################
+  #                 HYPR*                 #
+  #########################################
   services.hypridle = {
     enable = true;
     settings = {
@@ -89,45 +98,70 @@ in
           on-timeout = "hyprctl dispatch dpms off";
           on-resume = "hyprctl dispatch dpms on";
         }
-      ];
+      ] ++ (let bctl = "${pkgs.brightnessctl}/bin/brightnessctl";
+      in if host == "zephyrus" then
+      [
+        { # Dim laptop screen after 5 minutes
+          timeout = 300;
+          on-timeout = "${bctl} -s set 10";
+          on-resume = "${bctl} -r";
+        }
+        { # Turn off keyboard backlight after 5 minutes
+          timeout = 300;
+          on-timeout = "${bctl} -sd asus::kbd_backlight set 0";
+          on-resume = "${bctl} -rd assus::kbd_backlight";
+        }
+      ] else []
+      );
     };
   };
 
   programs.hyprlock = {
     enable = true;
     settings = {
-      image = {
-        position = "0, 180";
-        border_color = "rgba(0, 0, 0, 0)";
-        path = "${config.xdg.dataFile.assets.target}/nix-snowflake-colours.png";
+      background = {
+        blur_size = 1;
+        blur_passes = 2;
+        path = "${./assets/5cm-per-second.jpg}";
+      };
+      label = {
+        text = "$TIME";
+        font_size = 96;
+        font_family = "Serif Bold";
+        color = "rgb(255,231,242)";
+        shadow_boost = 4.8;
+        shadow_passes = 1;
+        position = "0, 0";
+        halign = "center";
+        valign = "center";
       };
       input-field = {
-        fade_on_empty = false;
-        outline_thickness = 2;
-        placeholder_text = "";
-        outer_color = "rgba(0, 0, 0, 0.2)";
-        inner_color = "rgba(0, 0, 0, 0.2)";
-        check_color = "rgb(126, 186, 228)";
-        fail_color = "rgb(255, 0, 0)";
-        font_color = "rgb(82, 119, 195)";
-        position = "0, -180";
-        size = "320, 40";
-      };
-      background = {
-        blur_size = 3;
-        blur_passes = 3;
-        brightness = 0.5;
-        path = "screenshot";
+        size = "225, 45";
+        position = "0, 135";
+        fail_text = "INCORRECT";
+        placeholder_text = "LOCKED";
+        font_family = "Serif Bold";
+        font_color = "rgb(0,0,0)";
+        check_color = "rgb(242,255,231)";
+        inner_color = "rgb(166,142,153)";
+        outline_thickness = 0;
+        shadow_passes = 1;
+        dots_size = 0.3;
+        halign = "center";
+        valign = "bottom";
       };
     };
   };
 
+  ############################################
+  #                 HYPRLAND                 #
+  ############################################
   wayland.windowManager.hyprland = {
     enable = true;
     settings = {
       monitor = [
-        "${display}, highrr, auto, 1"
         ", preferred, auto, 1"
+        "${display}, highrr, auto, 1"
       ];
 
       layerrule = [
@@ -138,6 +172,8 @@ in
       ];
 
       env = [
+        "TERM, kitty"
+        "EDITOR, nvim"
         "GTK_THEME, Colloid-Dark"
         "XCURSOR_THEME, ${cursorName}"
         "XCURSOR_SIZE, ${toString cursorSize}"
@@ -146,7 +182,8 @@ in
       ];
 
       exec-once = [
-        "${inputs.hyprpanel.packages.${pkgs.system}.default}/bin/hyprpanel"
+        "ulauncher"
+        "hyprpanel"
         "hyprctl setcursor ${cursorName} ${toString cursorSize}"
       ];
 
@@ -155,11 +192,11 @@ in
         gaps_out = 20;
         border_size = 0;
         resize_on_border = true;
+        # "col.active_border" = "rgb(000000)";
+        # "col.inactive_border" = "rgb(000000)";
       };
 
       decoration = {
-        # NOTE: Floatin hints get rounded, too, which also have borders
-        # NOTE: Floating windows (e.g., hints) also get rounded which can look weird
         rounding = 0;
         blur = {
           size = 3;
@@ -167,9 +204,10 @@ in
         };
         shadow = {
           range = 20;
-          render_power = 2;
-          color = "rgba(0, 0, 0, 1.0)";
-          color_inactive = "rgba(0, 0, 0, 0.25)";
+          # offset = "2, 2";
+          render_power = 1;
+          color = "rgba(0,0,0, 1.0)";
+          color_inactive = "rgba(0,0,0, 0.5)";
         };
       };
 
@@ -179,11 +217,12 @@ in
           "close, 0.00, 0.85, 1.00, 0.85"
         ];
         animation = [
-          "windowsIn       , 1, 2, jiggle, popin"
-          "windowsMove     , 1, 2, jiggle, slide"
-          "workspaces      , 1, 2, jiggle, slide"
-          "fadeOut   , 1, 2, close"
-          "windowsOut, 1, 2, close, popin"
+          # name, on/off, speed, curve [,style]
+          "windowsIn  , 1, 3, jiggle, popin"
+          "windowsMove, 1, 3, jiggle, slide"
+          "workspaces , 1, 3, jiggle, slide"
+          "fadeOut    , 1, 3, close"
+          "windowsOut , 1, 3, close, popin"
         ];
       };
 
@@ -220,17 +259,54 @@ in
       "$ENTER" = 36;
       "$SPACE" = 65;
 
-      bind = [
+      bind = let
+        pamixer = "${pkgs.pamixer}/bin/pamixer";
+        wallpaper = pkgs.writeShellApplication {
+          runtimeInputs = [ pkgs.eza ];
+          name = "wallpaper";
+          text = let
+            notify = msg: "notify-send nivem \"${msg}\"";
+          in ''
+            if [[ $# -ne 1 ]]; then
+              ${notify "Expected an argument but got $#"}
+              exit 1
+            fi
+            
+            wallpapers=("$1"/*)
+
+            if [[ ''${#wallpapers[@]} -eq 0 ]]; then
+              ${notify "Got an empty directory $1"}
+              exit 1
+            fi
+
+            selection=$((RANDOM%''${#wallpapers[@]}))
+            
+            ${notify "Changing wallpaper..."}
+
+            ${pkgs.swww}/bin/swww img \
+              --transition-duration 2 \
+              --transition-type grow \
+              --transition-fps 144 \
+              "''${wallpapers[selection]}"
+          '';
+        };
+      in [
         "     ,    F10, togglefloating,"
         "     ,    F11, fullscreen,"
-        "SUPER,      C, killactive,"
-        "SUPER, $ENTER, exec, ${pkgs.kitty}/bin/kitty"
-        "SUPER,      B, exec, ${pkgs.brave}/bin/brave"
-        "SUPER,      I, exec, ${pkgs.neovide}/bin/neovide"
-        "SUPER,      F, exec, ${pkgs.nautilus}/bin/nautilus"
-        "SUPER,      L, exec, ${pkgs.hyprlock}/bin/hyprlock"
-        "SUPER,      [, exec, ${pkgs.rofi-wayland}/bin/rofi -show drun"
-        "SUPER,    TAB, exec, ${pkgs.rofi-wayland}/bin/rofi -show window"
+        "SUPER,      Q, killactive,"
+        "SUPER,      T, exec, kitty"
+        "SUPER,      B, exec, brave"
+        "SUPER,      N, exec, neovide"
+        "SUPER,      E, exec, nautilus"
+        # TODO: Change to wlogout
+        "SUPER,      L, exec, hyprlock"
+        "SUPER, $ENTER, exec, ulauncher-toggle"
+
+        "SUPER,      A, exec, ${wallpaper}/bin/wallpaper ${../../wallpapers/anime}"
+        "SUPER,      H, exec, ${wallpaper}/bin/wallpaper ${../../wallpapers/mountain}"
+
+        # TODO: How to navigate dwindle layout
+        # TODO: Is it possible to expand/shrink windows
  
         # master layout key binding
         # "SUPER      ,      J, layoutmsg, cyclenext"
@@ -260,18 +336,18 @@ in
         "SUPER SHIFT,      5, movetoworkspacesilent, 5"
         "SUPER SHIFT, $ENTER,             layoutmsg, swapsplit"
 
-        ", XF86AudioRaiseVolume , exec, ${pkgs.pamixer}/bin/pamixer -i 10"
-        ", XF86AudioLowerVolume , exec, ${pkgs.pamixer}/bin/pamixer -d 10"
-        ", XF86AudioMute        , exec, ${pkgs.pamixer}/bin/pamixer -t"
-        ", XF86AudioMicMute     , exec, ${pkgs.pamixer}/bin/pamixer --default-source -t"
+        ", XF86AudioRaiseVolume , exec, ${pamixer} -i 10"
+        ", XF86AudioLowerVolume , exec, ${pamixer} -d 10"
+        ", XF86AudioMute        , exec, ${pamixer} -t"
+        ", XF86AudioMicMute     , exec, ${pamixer} --default-source -t"
       ];
 
       bindm = [
-        "$SUPER, mouse:272, movewindow"
-        "$SUPER, mouse:273, resizewindow"
+        "ALT, mouse:272, movewindow"
+        "ALT, mouse:273, resizewindow"
+        "SUPER, mouse:272, movewindow"
+        "SUPER, mouse:273, resizewindow"
       ];
     };
   };
-
-  systemd.user.startServices = "sd-switch";
 }

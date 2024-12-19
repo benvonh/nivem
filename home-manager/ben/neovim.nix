@@ -139,7 +139,6 @@
     plugins.lastplace.enable = true;
     plugins.markdown-preview.enable = true;
     plugins.nix.enable = true;
-    plugins.notify.enable = true;
     plugins.nvim-colorizer.enable = true;
     plugins.rainbow-delimiters.enable = true;
     plugins.scrollview.enable = true;
@@ -210,6 +209,11 @@
           "vim.lsp.util.convert_input_to_markdown_lines" = true;
         };
       };
+    };
+
+    plugins.notify = {
+      enable = true;
+      topDown = false;
     };
 
     plugins.nvim-autopairs = {
