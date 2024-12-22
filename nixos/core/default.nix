@@ -80,32 +80,28 @@ in
   services.displayManager.sddm = {
     enable = true;
     wayland.enable = true;
+
     sugarCandyNix = {
       enable = true;
       settings = let
         resolutionForHost = {
-          fractal = { w = 1920; h = 1080; };
           zephyrus = { w = 1920; h = 1200; };
+          fractal = { w = 1920; h = 1080; };
         };
-
         resolution = if builtins.hasAttr host resolutionForHost then
-         builtins.getAttr host resolutionForHost
-        else throw ''
-          nivem unknown host '${host}' for resolution
-          <services.displayManager.sddm.sugarCandyNix.settings>
-          (see ./nixos/core/default.nix)
-        '';
+          builtins.getAttr host resolutionForHost
+        else throw "[nivem] unknown host ${host} for resolution";
       in {
-        PartialBlur = true;
-        HaveFormBackground = true;
-        ScreenWidth = resolution.w;
-        ScreenHeight = resolution.h;
-        MainColor = "#CFDBE5"; 
         AccentColor = "#CFDBE5";
-        BackgroundColor = "#000000";
-        HeaderText = "nivem";
-        Font = "CaskaydiaCove NF";
         Background = lib.cleanSource ./assets/norway-river.jpg;
+        BackgroundColor = "#000000";
+        Font = "CaskaydiaCove NF";
+        HaveFormBackground = true;
+        HeaderText = "Welcome to nivem";
+        MainColor = "#CFDBE5"; 
+        PartialBlur = true;
+        ScreenHeight = resolution.h;
+        ScreenWidth = resolution.w;
       };
     };
   };
@@ -117,9 +113,9 @@ in
   #                 USER APPLICATION                 #
   ####################################################
   home-manager = {
-    users.ben.imports = [ ./home.nix ../../home-manager/ben ];
     extraSpecialArgs = { inherit inputs outputs; host = host; };
-    backupFileExtension = "backup";
+    users.ben.imports = [ ./home.nix ./hypr.nix ../../home-manager/ben ];
+    backupFileExtension = "hm.backup";
   };
 
   users.users.ben = {
@@ -160,7 +156,7 @@ in
     gnome-system-monitor
     gnome-disk-utility
     gnome-calculator
-    youtube-music
+    mission-center
     obs-studio
     celluloid
     libnotify
@@ -173,6 +169,7 @@ in
   programs.git.enable = true;
   programs.vim.enable = true;
   programs.zsh.enable = true;
+  programs.steam.enable = true;
   programs.hyprland.enable = true;
   programs.hyprlock.enable = true;
   programs.nm-applet.enable = true;

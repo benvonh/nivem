@@ -40,9 +40,6 @@
       wl-clipboard # Copy-paste in Wayland
       nodejs # Bunch of things may need it
       tldr
-      # FIXME: Is it needed?
-      # For ranger image preview
-      # python3Packages.pillow
     ];
   };
 
@@ -59,6 +56,9 @@
 
   programs.ranger = {
     enable = true;
+    extraPackages = [
+      pkgs.python3Packages.pillow
+    ];
     settings = {
       preview_images = true;
       preview_images_method = "kitty";
@@ -68,25 +68,24 @@
 
   programs.htop.enable = true;
   programs.gh.enable = true;
+
   programs.git = {
     enable = true;
     userName = "benvonh";
     userEmail = "benjaminvonsnarski@gmail.com";
+    extraConfig.pull.rebase = false;
   };
 
   programs.kitty = {
     enable = true;
-    themeFile = "Catppuccin-Mocha";
+    themeFile = "gruvbox-dark";
     shellIntegration.mode = "no-cursor";
     settings.window_padding_width = 8;
     font = {
       size = 11;
-      name = "Departure Mono";
-      package = pkgs.departure-mono;
-      # name = "CaskaydiaCove NF";
-      # package = (pkgs.nerdfonts.override {
-      #   fonts = [ "CascadiaCode" ];
-      # });
+      name = "CaskaydiaCove NF";
+      # name = "Departure Mono";
+      # package = pkgs.departure-mono;
     };
   };
 }

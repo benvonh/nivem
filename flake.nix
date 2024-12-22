@@ -11,10 +11,14 @@
     nixvim.url = "github:nix-community/nixvim/nixos-24.11";
     nixvim.inputs.nixpkgs.follows = "nixpkgs";
 
-    hyprpanel.url = "github:jas-singhfsu/hyprpanel";
+    # TODO: WIP
+    # hyprpanel.url = "github:jas-singhfsu/hyprpanel";
+    hyprpanel.url = "github:benvonh/hyprpanel/agsv1";
     hyprpanel.inputs.nixpkgs.follows = "nixpkgs";
 
     sugar-candy.url = "github:zhaith-izaliel/sddm-sugar-candy-nix";
+    sugar-candy.inputs.nixpkgs.follows = "nixpkgs";
+
     hardware.url = "github:nixos/nixos-hardware";
   };
 
@@ -36,10 +40,10 @@
     forAllSystems = nixpkgs.lib.genAttrs systems;
   in
   {
+    overlays = import ./overlays.nix { inherit inputs; };
+
     packages = forAllSystems (system: import ./pkgs.nix pkgsFor.${system});
     devShells = forAllSystems (system: import ./shell.nix pkgsFor.${system});
-
-    overlays = import ./overlays.nix { inherit inputs; };
 
     nixosConfigurations = {
       fractal = nixpkgs.lib.nixosSystem {

@@ -5,7 +5,8 @@
   programs.nixvim = {
     enable = true;
 
-    colorscheme = "catppuccin";
+    # colorscheme = "catppuccin";
+    colorscheme = "gruvbox";
 
     colorschemes = {
       gruvbox.enable = true;
@@ -136,6 +137,7 @@
     ############################################
     plugins.comment.enable = true;
     plugins.fugitive.enable = true;
+    plugins.gitsigns.enable = true;
     plugins.lastplace.enable = true;
     plugins.markdown-preview.enable = true;
     plugins.nix.enable = true;
@@ -148,7 +150,7 @@
     plugins.trouble.enable = true;
     plugins.web-devicons.enable = true;
     plugins.which-key.enable = true;
-
+    
     plugins.auto-session = {
       enable = true;
       settings = {

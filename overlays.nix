@@ -1,4 +1,4 @@
-{ inputs, ... }:
+{ inputs }:
 {
   additions = final: prev: import ./pkgs.nix final.pkgs;
 

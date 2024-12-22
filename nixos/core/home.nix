@@ -1,17 +1,5 @@
-{ inputs, pkgs, host, ... }:
+{ inputs, config, pkgs, host, ... }:
 let
-  displayForHost = {
-    fractal = "DP-2";
-    zephyrus = "eDP-2";
-  };
-
-  display = if builtins.hasAttr host displayForHost then
-    builtins.getAttr host displayForHost
-  else throw ''
-    nivem unknown host '${host}' for display
-    (see ./nixos/core/home.nix)
-  '';
-
   themePkg = pkgs.colloid-gtk-theme;
   themeName = "Colloid-Dark";
 
@@ -59,99 +47,117 @@ in
     packages = with pkgs; [
       # TODO: Help create a Home Manager module for it?
       ulauncher
+   ] ++ (if host == "fractal" then
+   [
+     python3Packages.gpustat
+   ] else []
+   );
+  };
 
-      # NOTE: Waiting to be added to nixpkgs
-      inputs.hyprpanel.packages.${pkgs.system}.default
-     (nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
+  # https://github.com/MrVivekRajan/Hypr-Dots
+  programs.wlogout = {
+    enable = true;
+    layout = [
+      {
+        label = "lock";
+        action = "hyprlock";
+        text = "  Lock";
+        keybind = "l";
+        circular = true;
+      }
+      {
+        label = "logout";
+        action = "hyprctl dispatch exit";
+        text = " Logout  ";
+        keybind = "m";
+        circular = true;
+      }
+      {
+        label = "suspend";
+        action = "systemctl suspend";
+        text = " Suspend ";
+        keybind = "s";
+        circular = true;
+      }
+      {
+        label = "shutdown";
+        action = "systemctl poweroff";
+        text = "Shutdown ";
+        keybind = "d";
+        circular = true;
+      }
+      {
+        label = "reboot";
+        action = "systemctl reboot";
+        text = " Reboot  ";
+        keybind = "r";
+        circular = true;
+      }
     ];
+    style = ''
+      window {
+          font-family: CaskaydiaCove NF, monospace;
+          font-size: 12pt;
+          color: #cdd6f4; 
+          background-color: rgba(0, 0, 0, .5);
+      }
+
+      button {
+          background-repeat: no-repeat;
+          background-position: center;
+          background-size: 60%;
+          border: none;
+          color: #fbf1c7;
+          text-shadow: none;
+          border-radius: 20px 20px 20px 20px;
+          background-color: rgba(1, 121, 111, 0);
+          margin: 5px;
+          transition: box-shadow 0.2s ease-in-out, background-color 0.2s ease-in-out;
+      }
+
+      button:hover {
+          background-color: rgba(213, 196, 161, 0.1);
+      }
+
+      #lock {
+          background-image: image(url("${./assets/icons/lock.png}"));
+          background-size: 70%;
+      }
+      #lock:focus {
+          background-image: image(url("${./assets/icons/lock-hover.png}"));
+      }
+
+      #logout {
+          background-image: image(url("${./assets/icons/logout.png}"));
+      }
+      #logout:focus {
+          background-image: image(url("${./assets/icons/logout-hover.png}"));
+      }
+
+      #suspend {
+          background-image: image(url("${./assets/icons/sleep.png}"));
+      } 
+      #suspend:focus {
+          background-image: image(url("${./assets/icons/sleep-hover.png}"));
+      }
+
+      #shutdown {
+          background-image: image(url("${./assets/icons/power.png}"));
+      }
+      #shutdown:focus {
+          background-image: image(url("${./assets/icons/power-hover.png}"));
+      }
+
+      #reboot {
+          background-image: image(url("${./assets/icons/restart.png}"));
+      }
+      #reboot:focus {
+          background-image: image(url("${./assets/icons/restart-hover.png}"));
+      }
+    '';
   };
 
-  # FIXME: HyprPanel can set wallpaper?
-  # services.hyprpaper = {
-  #   enable = true;
-  #   settings = {
-  #     ipc = true;
-  #     splash = false;
-  #     preload = [ "${./assets/maplestory.png}" ];
-  #     wallpaper = [ "${display}, ${./assets/maplestory.png}" ];
-  #   };
-  # };
-
-  #########################################
-  #                 HYPR*                 #
-  #########################################
-  services.hypridle = {
-    enable = true;
-    settings = {
-      general = {
-        lock_cmd = "pidof hyprlock || hyprlock";
-        before_sleep_cmd = "loginctl lock-session";
-        after_sleep_cmd = "hyprctl dispatch dpms on";
-      };
-      listener = [
-        { # Lock computer after 10 minutes
-          timeout = 600;
-          on-timeout = "loginctl lock-session";
-        }
-        { # Turn off screen after 20 minutes
-          timeout = 1200;
-          on-timeout = "hyprctl dispatch dpms off";
-          on-resume = "hyprctl dispatch dpms on";
-        }
-      ] ++ (let bctl = "${pkgs.brightnessctl}/bin/brightnessctl";
-      in if host == "zephyrus" then
-      [
-        { # Dim laptop screen after 5 minutes
-          timeout = 300;
-          on-timeout = "${bctl} -s set 10";
-          on-resume = "${bctl} -r";
-        }
-        { # Turn off keyboard backlight after 5 minutes
-          timeout = 300;
-          on-timeout = "${bctl} -sd asus::kbd_backlight set 0";
-          on-resume = "${bctl} -rd assus::kbd_backlight";
-        }
-      ] else []
-      );
-    };
-  };
-
-  programs.hyprlock = {
-    enable = true;
-    settings = {
-      background = {
-        blur_size = 1;
-        blur_passes = 2;
-        path = "${./assets/5cm-per-second.jpg}";
-      };
-      label = {
-        text = "$TIME";
-        font_size = 96;
-        font_family = "Serif Bold";
-        color = "rgb(255,231,242)";
-        shadow_boost = 4.8;
-        shadow_passes = 1;
-        position = "0, 0";
-        halign = "center";
-        valign = "center";
-      };
-      input-field = {
-        size = "225, 45";
-        position = "0, 135";
-        fail_text = "INCORRECT";
-        placeholder_text = "LOCKED";
-        font_family = "Serif Bold";
-        font_color = "rgb(0,0,0)";
-        check_color = "rgb(242,255,231)";
-        inner_color = "rgb(166,142,153)";
-        outline_thickness = 0;
-        shadow_passes = 1;
-        dots_size = 0.3;
-        halign = "center";
-        valign = "bottom";
-      };
-    };
-  };
+  # xdg.dataFile.wlogout-icons.source = ./assets/icons;
 
   ############################################
   #                 HYPRLAND                 #
@@ -159,16 +165,25 @@ in
   wayland.windowManager.hyprland = {
     enable = true;
     settings = {
-      monitor = [
-        ", preferred, auto, 1"
+
+      monitor = let
+        displayForHost = {
+          zephyrus = "eDP-2";
+          fractal = "DP-2";
+        };
+        display = if builtins.hasAttr host displayForHost then
+          builtins.getAttr host displayForHost
+          else throw "[nivem] unknown host ${host} for display";
+      in [
+        # display, resolution, position, scale
         "${display}, highrr, auto, 1"
+        ", preferred, auto, 1"
       ];
 
       layerrule = [
         "blur, rofi"
         "blur, bar-0"
         "blur, logout_dialog"
-        "blur, notifications-window"
       ];
 
       env = [
@@ -183,7 +198,6 @@ in
 
       exec-once = [
         "ulauncher"
-        "hyprpanel"
         "hyprctl setcursor ${cursorName} ${toString cursorSize}"
       ];
 
@@ -192,8 +206,6 @@ in
         gaps_out = 20;
         border_size = 0;
         resize_on_border = true;
-        # "col.active_border" = "rgb(000000)";
-        # "col.inactive_border" = "rgb(000000)";
       };
 
       decoration = {
@@ -201,10 +213,10 @@ in
         blur = {
           size = 3;
           passes = 3;
+          noise = 0.1;
         };
         shadow = {
           range = 20;
-          # offset = "2, 2";
           render_power = 1;
           color = "rgba(0,0,0, 1.0)";
           color_inactive = "rgba(0,0,0, 0.5)";
@@ -218,11 +230,11 @@ in
         ];
         animation = [
           # name, on/off, speed, curve [,style]
-          "windowsIn  , 1, 3, jiggle, popin"
+          "windowsIn  , 1, 3, jiggle, slide"
           "windowsMove, 1, 3, jiggle, slide"
-          "workspaces , 1, 3, jiggle, slide"
-          "fadeOut    , 1, 3, close"
-          "windowsOut , 1, 3, close, popin"
+          "workspaces , 1, 3, jiggle, slidefade"
+          "windowsOut , 1, 3,  close, slide"
+          "fadeOut    , 1, 3,  close"
         ];
       };
 
@@ -264,9 +276,7 @@ in
         wallpaper = pkgs.writeShellApplication {
           runtimeInputs = [ pkgs.eza ];
           name = "wallpaper";
-          text = let
-            notify = msg: "notify-send nivem \"${msg}\"";
-          in ''
+          text = let notify = msg: "notify-send nivem \"${msg}\""; in ''
             if [[ $# -ne 1 ]]; then
               ${notify "Expected an argument but got $#"}
               exit 1
@@ -280,17 +290,23 @@ in
             fi
 
             selection=$((RANDOM%''${#wallpapers[@]}))
-            
-            ${notify "Changing wallpaper..."}
 
             ${pkgs.swww}/bin/swww img \
-              --transition-duration 2 \
+              --transition-duration 1 \
               --transition-type grow \
               --transition-fps 144 \
               "''${wallpapers[selection]}"
+
+            code=$?
+
+            if [[ $code -ne 0 ]]; then
+              ${notify "Got exit code $code from swww while changing wallpaper"}
+              exit 1
+            fi
           '';
         };
       in [
+
         "     ,    F10, togglefloating,"
         "     ,    F11, fullscreen,"
         "SUPER,      Q, killactive,"
@@ -298,8 +314,7 @@ in
         "SUPER,      B, exec, brave"
         "SUPER,      N, exec, neovide"
         "SUPER,      E, exec, nautilus"
-        # TODO: Change to wlogout
-        "SUPER,      L, exec, hyprlock"
+        "SUPER,      L, exec, wlogout -b 5"
         "SUPER, $ENTER, exec, ulauncher-toggle"
 
         "SUPER,      A, exec, ${wallpaper}/bin/wallpaper ${../../wallpapers/anime}"
