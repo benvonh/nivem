@@ -157,8 +157,6 @@ in
     '';
   };
 
-  # xdg.dataFile.wlogout-icons.source = ./assets/icons;
-
   ############################################
   #                 HYPRLAND                 #
   ############################################
@@ -263,15 +261,13 @@ in
         force_split = 2;
       };
 
-      windowrulev2 = [
-        "opacity 0.9 override 0.9 override 0.9, class:kitty"
-        "opacity 0.9 override 0.9 override 0.9, class:neovide"
-      ];
+      windowrulev2 = [ "opacity 0.9 override 0.9 override 0.9, class:kitty" ];
 
       "$ENTER" = 36;
       "$SPACE" = 65;
 
       bind = let
+        bctl = "${pkgs.brightnessctl}/bin/brightnessctl";
         pamixer = "${pkgs.pamixer}/bin/pamixer";
         wallpaper = pkgs.writeShellApplication {
           runtimeInputs = [ pkgs.eza ];
@@ -306,13 +302,11 @@ in
           '';
         };
       in [
-
         "     ,    F10, togglefloating,"
         "     ,    F11, fullscreen,"
         "SUPER,      Q, killactive,"
         "SUPER,      T, exec, kitty"
         "SUPER,      B, exec, brave"
-        "SUPER,      N, exec, neovide"
         "SUPER,      E, exec, nautilus"
         "SUPER,      L, exec, wlogout -b 5"
         "SUPER, $ENTER, exec, ulauncher-toggle"
@@ -355,6 +349,10 @@ in
         ", XF86AudioLowerVolume , exec, ${pamixer} -d 10"
         ", XF86AudioMute        , exec, ${pamixer} -t"
         ", XF86AudioMicMute     , exec, ${pamixer} --default-source -t"
+        ", XF86MonBrightnessUp  , exec, ${bctl} set +10%"
+        ", XF86MonBrightnessDown, exec, ${bctl} set 10%-"
+        ", XF86KbdBrightnessUp  , exec, ${bctl} -d asus::kbd_backlight set +1"
+        ", XF86KbdBrightnessDown, exec, ${bctl} -d asus::kbd_backlight set 1-"
       ];
 
       bindm = [

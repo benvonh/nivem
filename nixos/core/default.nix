@@ -161,7 +161,6 @@ in
     celluloid
     libnotify
     nautilus
-    neovide 
     discord 
     brave 
   ];

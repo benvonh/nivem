@@ -80,7 +80,10 @@
     enable = true;
     themeFile = "gruvbox-dark";
     shellIntegration.mode = "no-cursor";
-    settings.window_padding_width = 8;
+    settings = {
+      cursor_trail = 10;
+      window_padding_width = 8;
+    };
     font = {
       size = 11;
       name = "CaskaydiaCove NF";

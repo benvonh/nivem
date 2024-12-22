@@ -22,6 +22,7 @@
   };
 
   programs.fzf.enable = true;
+  # TODO: config
   programs.btop.enable = true;
   programs.zoxide.enable = true;
   programs.starship.enable = true;

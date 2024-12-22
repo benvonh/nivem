@@ -33,7 +33,7 @@
         { # Turn off keyboard backlight after 5 minutes
           timeout = 300;
           on-timeout = "${bctl} -sd asus::kbd_backlight set 0";
-          on-resume = "${bctl} -rd assus::kbd_backlight";
+          on-resume = "${bctl} -rd asus::kbd_backlight";
         }
       ] else []
       );
