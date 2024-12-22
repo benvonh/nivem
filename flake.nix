@@ -1,5 +1,5 @@
 {
-  description = "A mechatronic engineer's NixOS and Home Manager configuration";
+  description = "A NixOS and Home Manager configuration";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
@@ -40,10 +40,18 @@
     forAllSystems = nixpkgs.lib.genAttrs systems;
   in
   {
-    overlays = import ./overlays.nix { inherit inputs; };
+    packages = forAllSystems (system: {
+      cheat = pkgsFor.${system}.callPackage ./cheat {};
+    });
 
-    packages = forAllSystems (system: import ./pkgs.nix pkgsFor.${system});
-    devShells = forAllSystems (system: import ./shell.nix pkgsFor.${system});
+    devShells = forAllSystems (system: {
+      default = pkgsFor.${system}.mkShell {
+        NIX_CONFIG = "experimental-features = nix-command flakes";
+        nativeBuildInputs = with pkgsFor.${system}; [
+          nix git vim home-manager
+        ];
+      };
+    });
 
     nixosConfigurations = {
       fractal = nixpkgs.lib.nixosSystem {
