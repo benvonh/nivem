@@ -1,23 +1,11 @@
-{ inputs, outputs, lib, config, pkgs, ... }:
+{ lib, pkgs, ... }:
 {
   imports = [ ./zsh.nix ./neovim.nix ];
 
-  ##################################################
-  #                 BASIC SETTINGS                 #
-  ##################################################
-  nix = {
-    package = lib.mkDefault pkgs.nix;
-    settings.experimental-features = "nix-command flakes";
-  };
+  nix.package = lib.mkDefault pkgs.nix;
+  nix.settings.experimental-features = "nix-command flakes";
 
-  nixpkgs = {
-    overlays = [
-      outputs.overlays.additions
-      outputs.overlays.modifications
-      outputs.overlays.unstable-packages
-    ];
-    config.allowUnfree = true;
-  };
+  nixpkgs.config.allowUnfree = true;
 
   # TODO: Maybe only needed in NixOS config?
   # fonts.fontconfig = {
@@ -53,18 +41,6 @@
   };
 
   programs.home-manager.enable = true;
-
-  programs.ranger = {
-    enable = true;
-    extraPackages = [
-      pkgs.python3Packages.pillow
-    ];
-    settings = {
-      preview_images = true;
-      preview_images_method = "kitty";
-      draw_borders = "both";
-    };
-  };
 
   programs.htop.enable = true;
   programs.gh.enable = true;

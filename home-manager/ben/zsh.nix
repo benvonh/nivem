@@ -1,4 +1,3 @@
-# TODO: programs.ranger
 { config, pkgs, ... }:
 {
   home.packages = [
@@ -27,7 +26,18 @@
   programs.zoxide.enable = true;
   programs.starship.enable = true;
 
-  # NOTE: `dotDir` must be that string
+  programs.ranger = {
+    enable = true;
+    extraPackages = [
+      pkgs.python3Packages.pillow
+    ];
+    settings = {
+      draw_borders = "both";
+      preview_images = true;
+      preview_images_method = "kitty";
+    };
+  };
+
   programs.zsh = {
     enable = true;
     dotDir = ".config/zsh";
@@ -36,7 +46,6 @@
     syntaxHighlighting.enable = true;
 
     shellAliases = {
-      cd = "z";
       ga = "git add";
       gd = "git diff";
       gc = "git commit";
@@ -78,7 +87,19 @@
 
         nix develop "nixpkgs#$1"
       }
+
+      ${pkgs.microfetch}/bin/microfetch
     '';
+
+    plugins = [ {
+      name = "notify";
+      src = pkgs.fetchFromGitHub {
+        owner = "marzocchi";
+        repo = "zsh-notify";
+        rev = "v1.0";
+        sha256 = "sha256-d0MD3D4xiYVhMIjAW4npdtwHSobq6yEqyeSbOPq3aQM";
+      };
+    } ];
 
     sessionVariables = {
       OPENER = "bat";
@@ -105,7 +126,13 @@
     plugins = with pkgs.tmuxPlugins; [
       {
         plugin = resurrect;
-        extraConfig = "set -g @resurrect-strategy-nvim 'session'";
+        extraConfig = ''
+          set -g @resurrect-dir '${config.xdg.cacheHome}/tmux/resurrect'
+          set -g @resurrect-save 'G'
+          set -g @resurrect-restore 'R'
+          set -g @resurrect-strategy-nvim 'session'
+          set -g @resurrect-capture-pane-contents 'on'
+        '';
       }
       {
         plugin = continuum;

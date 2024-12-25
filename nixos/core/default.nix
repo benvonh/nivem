@@ -13,40 +13,29 @@ in
   ################################################
   nix = let
     flakeInputs = lib.filterAttrs (_: lib.isType "flake") inputs;
-  in {
-    registry = lib.mapAttrs (_: flake: { inherit flake; }) flakeInputs;
+  in
+  {
     nixPath = lib.mapAttrsToList (n: _: "${n}=flake:${n}") flakeInputs;
+    registry = lib.mapAttrs (_: flake: { inherit flake; }) flakeInputs;
 
     channel.enable = false;
+    optimise.automatic = true;
 
     settings = {
+      nix-path = config.nix.nixPath;
       flake-registry = "";
       auto-optimise-store = true;
       experimental-features = "nix-command flakes";
-      nix-path = config.nix.nixPath;
-    };
-
-    optimise = {
-      automatic = true;
-      dates = [ "weekly" ];
     };
 
     gc = {
-      automatic = true;
       dates = "weekly";
-      options = "-d --repair";
+      automatic = true;
       randomizedDelaySec = "45min";
     };
   };
 
-  nixpkgs = {
-    overlays = [
-      outputs.overlays.additions
-      outputs.overlays.modifications
-      outputs.overlays.unstable-packages
-    ];
-    config.allowUnfree = true;
-  };
+  nixpkgs.config.allowUnfree = true;
 
   ###################################################
   #                 SYSTEM SETTINGS                 #
@@ -59,17 +48,7 @@ in
 
   networking.networkmanager.enable = true;
 
-  boot.loader = {
-    systemd-boot.enable = true;
-    systemd-boot.configurationLimit = 3;
-    efi.canTouchEfiVariables = true;
-  };
-
-  ############################################
-  #                 SERVICES                 #
-  ############################################
-  services.gvfs.enable = true;
-  services.hypridle.enable = true;
+  security.rtkit.enable = true;
 
   services.pipewire = {
     enable = true;
@@ -77,45 +56,64 @@ in
     pulse.enable = true;
   };
 
+  # NOTE: SDDM on Wayland doesn't seem to support refresh rate
+  # FIXME: cursor theme
   services.displayManager.sddm = {
     enable = true;
     wayland.enable = true;
-
+    settings.General.CursorTheme = "Bibata-Modern-Ice";
     sugarCandyNix = {
       enable = true;
       settings = let
         resolutionForHost = {
-          zephyrus = { w = 1920; h = 1200; };
           fractal = { w = 1920; h = 1080; };
+          zephyrus = { w = 1920; h = 1200; };
         };
-        resolution = if builtins.hasAttr host resolutionForHost then
-          builtins.getAttr host resolutionForHost
-        else throw "[nivem] unknown host ${host} for resolution";
+        resolution =
+          if resolutionForHost ? ${host} then
+            resolutionForHost.${host}
+          else
+            throw "[nivem] host = ${host}";
       in {
-        AccentColor = "#CFDBE5";
-        Background = lib.cleanSource ./assets/norway-river.jpg;
-        BackgroundColor = "#000000";
         Font = "CaskaydiaCove NF";
-        HaveFormBackground = true;
-        HeaderText = "Welcome to nivem";
-        MainColor = "#CFDBE5"; 
+        MainColor = "#E9F5FF"; 
+        Background = lib.cleanSource ./assets/norway-river.jpg;
+        HeaderText = "Powered by nivem  ";
+        AccentColor = "#E9FFF5";
         PartialBlur = true;
-        ScreenHeight = resolution.h;
         ScreenWidth = resolution.w;
+        ScreenHeight = resolution.h;
+        BackgroundColor = "#000000";
+        HaveFormBackground = true;
       };
     };
   };
 
-  security.rtkit.enable = true;
-  hardware.pulseaudio.enable = false;
+  boot = {
+    loader = {
+      systemd-boot.enable = true;
+      systemd-boot.configurationLimit = 3;
+      efi.canTouchEfiVariables = true;
+    };
+    # Fixes audio popping on suspend/resume playback
+    extraModprobeConfig = "options snd_hda_intel power_save=0";
+    # Puts 'tmp' in RAM
+    tmp.useTmpfs = true;
+  };
 
-  ####################################################
-  #                 USER APPLICATION                 #
-  ####################################################
+  #################################################
+  #                 USER SETTINGS                 #
+  #################################################
   home-manager = {
-    extraSpecialArgs = { inherit inputs outputs; host = host; };
-    users.ben.imports = [ ./home.nix ./hypr.nix ../../home-manager/ben ];
-    backupFileExtension = "hm.backup";
+    extraSpecialArgs = {
+      inherit inputs outputs;
+      host = host;
+    };
+    users.ben.imports = [
+      ./home.nix ./hypr.nix
+      ../../home-manager/ben
+    ];
+    backupFileExtension = "bak";
   };
 
   users.users.ben = {
@@ -129,9 +127,9 @@ in
   };
 
   # NOTE: fontconfig tips...
-  # fc-cache -r
-  # fc-list | bat
-  # fc-match 'font name'
+  # `fc-cache -r`
+  # `fc-list | bat`
+  # `fc-match 'font name'`
   fonts = {
     packages = with pkgs; [
       (nerdfonts.override { fonts = [ "CascadiaCode" ]; })
@@ -157,6 +155,7 @@ in
     gnome-disk-utility
     gnome-calculator
     mission-center
+    bibata-cursors
     obs-studio
     celluloid
     libnotify
@@ -165,16 +164,22 @@ in
     brave 
   ];
 
+  programs.hyprland = {
+    enable = true;
+    withUWSM = true;
+  };
+
   programs.git.enable = true;
   programs.vim.enable = true;
   programs.zsh.enable = true;
+  programs.uwsm.enable = true;
   programs.steam.enable = true;
-  programs.hyprland.enable = true;
   programs.hyprlock.enable = true;
   programs.nm-applet.enable = true;
 
   # We don't use nano here...
   programs.nano.enable = false;
 
-  xdg.portal.wlr.enable = true;
+  services.gvfs.enable = true;
+  services.hypridle.enable = true;
 }

@@ -117,6 +117,7 @@
       # TODO: More telescope commands that I can add :)
       { mode = "n"; key = "<leader>o"; action = "<cmd>TodoTelescope<cr>"; options.desc = "Search TODO"; }
       { mode = "n"; key = "<leader>."; action = "<cmd>SessionSearch<cr>"; options.desc = "Search session"; }
+      { mode = "n"; key = "<leader>b"; action = "<cmd>Telescope buffers<cr>"; options.desc = "Open Buffer"; }
       { mode = "n"; key = "<leader>l"; action = "<cmd>Telescope live_grep<cr>"; options.desc = "Live grep"; }
       { mode = "n"; key = "<leader>f"; action = "<cmd>Telescope find_files<cr>"; options.desc = "Find files"; }
       { mode = "n"; key = "<leader>h"; action = "<cmd>Noice history<cr>"; options.desc = "Show message history"; }

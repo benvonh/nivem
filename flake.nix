@@ -11,9 +11,9 @@
     nixvim.url = "github:nix-community/nixvim/nixos-24.11";
     nixvim.inputs.nixpkgs.follows = "nixpkgs";
 
-    # TODO: WIP
-    # hyprpanel.url = "github:jas-singhfsu/hyprpanel";
-    hyprpanel.url = "github:benvonh/hyprpanel/agsv1";
+    # NOTE: Fork of "github:jas-singhfsu/hyprpanel"
+    hyprpanel.url = "git+file:///home/ben/HyprPanel";
+    # hyprpanel.url = "github:benvonh/hyprpanel";
     hyprpanel.inputs.nixpkgs.follows = "nixpkgs";
 
     sugar-candy.url = "github:zhaith-izaliel/sddm-sugar-candy-nix";
@@ -40,18 +40,18 @@
     forAllSystems = nixpkgs.lib.genAttrs systems;
   in
   {
-    packages = forAllSystems (system: {
-      cheat = pkgsFor.${system}.callPackage ./cheat {};
-    });
+    packages = forAllSystems (system:
+      let pkgs = pkgsFor.${system}; in {
+        cheat = pkgs.callPackage ./cheat {};
+      });
 
-    devShells = forAllSystems (system: {
-      default = pkgsFor.${system}.mkShell {
-        NIX_CONFIG = "experimental-features = nix-command flakes";
-        nativeBuildInputs = with pkgsFor.${system}; [
-          nix git vim home-manager
-        ];
-      };
-    });
+    devShells = forAllSystems (system:
+      let pkgs = pkgsFor.${system}; in {
+        default = pkgs.mkShell {
+          NIX_CONFIG = "experimental-features = nix-command flakes";
+          packages = [ pkgs.nix pkgs.git pkgs.vim pkgs.home-manager ];
+        };
+      });
 
     nixosConfigurations = {
       fractal = nixpkgs.lib.nixosSystem {
