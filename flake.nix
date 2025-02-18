@@ -12,12 +12,16 @@
     nixvim.inputs.nixpkgs.follows = "nixpkgs";
 
     # NOTE: Fork of "github:jas-singhfsu/hyprpanel"
-    hyprpanel.url = "git+file:///home/ben/HyprPanel";
-    # hyprpanel.url = "github:benvonh/hyprpanel";
+    # hyprpanel.url = "git+file:///home/ben/HyprPanel";
+    # hyprpanel.url = "github:jas-singhfsu/hyprpanel";
+    hyprpanel.url = "github:benvonh/hyprpanel";
     hyprpanel.inputs.nixpkgs.follows = "nixpkgs";
 
     sugar-candy.url = "github:zhaith-izaliel/sddm-sugar-candy-nix";
     sugar-candy.inputs.nixpkgs.follows = "nixpkgs";
+
+    ulauncher.url = "github:ulauncher/ulauncher/v6";
+    ulauncher.inputs.nixpkgs.follows = "nixpkgs";
 
     hardware.url = "github:nixos/nixos-hardware";
   };

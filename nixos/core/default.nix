@@ -27,15 +27,15 @@ in
       auto-optimise-store = true;
       experimental-features = "nix-command flakes";
     };
-
-    gc = {
-      dates = "weekly";
-      automatic = true;
-      randomizedDelaySec = "45min";
-    };
   };
 
-  nixpkgs.config.allowUnfree = true;
+  nixpkgs = {
+    overlays = [
+      inputs.hyprpanel.overlay
+      inputs.ulauncher.overlays.default
+    ];
+    config.allowUnfree = true;
+  };
 
   ###################################################
   #                 SYSTEM SETTINGS                 #
@@ -56,12 +56,16 @@ in
     pulse.enable = true;
   };
 
-  # NOTE: SDDM on Wayland doesn't seem to support refresh rate
-  # FIXME: cursor theme
   services.displayManager.sddm = {
     enable = true;
-    wayland.enable = true;
-    settings.General.CursorTheme = "Bibata-Modern-Ice";
+    wayland = {
+      enable = true;
+      compositor = "kwin";
+    };
+    settings.Theme =  {
+      CursorTheme = "Bibata-Modern-Ice";
+      CursorSize = 20;
+    };
     sugarCandyNix = {
       enable = true;
       settings = let
@@ -92,12 +96,12 @@ in
   boot = {
     loader = {
       systemd-boot.enable = true;
-      systemd-boot.configurationLimit = 3;
+      systemd-boot.configurationLimit = 5;
       efi.canTouchEfiVariables = true;
     };
     # Fixes audio popping on suspend/resume playback
     extraModprobeConfig = "options snd_hda_intel power_save=0";
-    # Puts 'tmp' in RAM
+    # Mounts '/tmp' to RAM
     tmp.useTmpfs = true;
   };
 
@@ -105,13 +109,13 @@ in
   #                 USER SETTINGS                 #
   #################################################
   home-manager = {
-    extraSpecialArgs = {
-      inherit inputs outputs;
-      host = host;
-    };
+    useGlobalPkgs = true;
+    useUserPackages = true;
+    extraSpecialArgs = { inherit inputs outputs; };
     users.ben.imports = [
-      ./home.nix ./hypr.nix
       ../../home-manager/ben
+      ./home.nix 
+      ./hypr.nix
     ];
     backupFileExtension = "bak";
   };
@@ -148,8 +152,11 @@ in
     };
   };
 
+  environment.sessionVariables.XCURSOR_THEME = "Bibata-Modern-Ice";
+
   environment.systemPackages = with pkgs; [
-    libsForQt5.qt5.qtgraphicaleffects
+    # TODO: Uhhh do I still need?
+    # libsForQt5.qt5.qtgraphicaleffects
     # TODO: Where is the best place for these?
     gnome-system-monitor
     gnome-disk-utility

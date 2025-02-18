@@ -1,7 +1,5 @@
 { config, pkgs, ... }:
 {
-  systemd.user.startServices = "sd-switch";
-
   gtk = {
     enable = true;
     theme = {
@@ -40,19 +38,20 @@
       {
         label = "lock";
         action = "loginctl lock-session";
-        text = "LOCK [L]";
+        text = "Lock [L]";
         keybind = "l";
       }
       {
         label = "shutdown";
         action = "systemctl poweroff";
-        text = "SHUT DOWN";
+        text = "Shutdown [H]";
+        keybind = "h";
       }
       {
         label = "logout";
-        action = "hyprctl dispatch exit";
-        text = "LOG OUT [O]";
-        keybind = "q";
+        action = "uwsm stop";
+        text = "Logout [O]";
+        keybind = "o";
       }
     ];
     style = ''
@@ -91,4 +90,6 @@
       }
     '';
   };
+
+  systemd.user.startServices = "sd-switch";
 }

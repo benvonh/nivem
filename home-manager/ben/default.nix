@@ -5,8 +5,6 @@
   nix.package = lib.mkDefault pkgs.nix;
   nix.settings.experimental-features = "nix-command flakes";
 
-  nixpkgs.config.allowUnfree = true;
-
   # TODO: Maybe only needed in NixOS config?
   # fonts.fontconfig = {
   #   enable = true;
@@ -28,6 +26,7 @@
       wl-clipboard # Copy-paste in Wayland
       nodejs # Bunch of things may need it
       tldr
+      neovide
     ];
   };
 
@@ -40,7 +39,9 @@
     theme = ./rofi.rasi;
   };
 
-  programs.home-manager.enable = true;
+  programs.home-manager = {
+    enable = true;
+  };
 
   programs.htop.enable = true;
   programs.gh.enable = true;
