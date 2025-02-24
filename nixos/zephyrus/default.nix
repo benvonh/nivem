@@ -6,6 +6,8 @@
 
   networking.hostName = "zephyrus";
 
+  programs.nm-applet.enable = true;
+
   services.upower.enable = true;
   services.blueman.enable = true;
   services.libinput.enable = true;
