@@ -1,4 +1,4 @@
-> *Nivem* is the accusative singular of *nix* in Latin meaning snow :snowflake:
+> nivem: accusative singular of **nix** :snowflake:
 
 # nivem
 
@@ -8,11 +8,14 @@ My NixOS and Home Manager configurations in a Nix flake.
 https://github.com/user-attachments/assets/682b669c-7ae4-4cf6-b765-6b186498363f
 
 
+## Installation
+
+
+<details>
+<summary style="font-size: 1.5em; font-weight: bold;">## Hi</summary>
 ## Online Install (Home Manager)
 
 **Install a configuration without cloning this repository.**
-
-:warning: Symlinks will be created in your home directory.
 
 1. If Home Manager is not installed and experimental features are not enabled, run
 ```sh
@@ -29,7 +32,7 @@ May be omitted to automatically read from the shell environment.
 
 
 
-## Standalone Install (Home Manager)
+## Full Install (Home Manager)
 
 **Configure Home Manager on a non-NixOS system.**
 
