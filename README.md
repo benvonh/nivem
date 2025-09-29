@@ -4,6 +4,10 @@
 
 My NixOS and Home Manager configurations in a Nix flake.
 
+
+https://github.com/user-attachments/assets/682b669c-7ae4-4cf6-b765-6b186498363f
+
+
 ## Online Install (Home Manager)
 
 **Install a configuration without cloning this repository.**
