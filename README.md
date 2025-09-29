@@ -1,23 +1,8 @@
-TODO: REVISE WHOLE THING
+> *Nivem* is the accusative singular of *nix* in Latin meaning snow :snowflake:
+
 # nivem
 
 My NixOS and Home Manager configurations in a Nix flake.
-
-Features
-- Hyprland and the Hypr suite;
-- A modern shell experience in Zsh;
-- Custom Nix packages built from source; and
-- Neovim configured with the Nixvim module.
-
-TODO: Add screenshots / videos
-
----
-*What does "nivem" mean?*
-
-"Nivem" is the accusative case of the word *snow* in Latin whereas "nix" is the nominative case.
-So they mean the same thing but "nix" is the *subject* and "nivem" is the *object*... very poetic :snowflake:
-
-
 
 ## Online Install (Home Manager)
 

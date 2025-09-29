@@ -2,26 +2,20 @@
   description = "A NixOS and Home Manager configuration";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
 
-    home-manager.url = "github:nix-community/home-manager/release-24.11";
+    home-manager.url = "github:nix-community/home-manager/release-25.05";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    nixvim.url = "github:nix-community/nixvim/nixos-24.11";
+    nixvim.url = "github:nix-community/nixvim/nixos-25.05";
     nixvim.inputs.nixpkgs.follows = "nixpkgs";
 
-    # NOTE: Fork of "github:jas-singhfsu/hyprpanel"
-    # hyprpanel.url = "git+file:///home/ben/HyprPanel";
-    # hyprpanel.url = "github:jas-singhfsu/hyprpanel";
-    hyprpanel.url = "github:benvonh/hyprpanel";
-    hyprpanel.inputs.nixpkgs.follows = "nixpkgs";
+    silent-sddm.url = "github:uiriansan/silentsddm";
+    silent-sddm.inputs.nixpkgs.follows = "nixpkgs";
 
-    sugar-candy.url = "github:zhaith-izaliel/sddm-sugar-candy-nix";
-    sugar-candy.inputs.nixpkgs.follows = "nixpkgs";
-
-    ulauncher.url = "github:ulauncher/ulauncher/v6";
-    ulauncher.inputs.nixpkgs.follows = "nixpkgs";
+    caelestia-shell.url = "github:caelestia-dots/shell";
+    # caelestia-shell.inputs.nixpkgs.follows = "nixpkgs";
 
     hardware.url = "github:nixos/nixos-hardware";
   };
@@ -53,7 +47,7 @@
       let pkgs = pkgsFor.${system}; in {
         default = pkgs.mkShell {
           NIX_CONFIG = "experimental-features = nix-command flakes";
-          packages = [ pkgs.nix pkgs.git pkgs.vim pkgs.home-manager ];
+          packages = with pkgs; [ nix git vim home-manager ];
         };
       });
 

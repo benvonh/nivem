@@ -30,15 +30,6 @@
     ];
   };
 
-  programs.rofi = {
-    enable = true;
-    cycle = false;
-    terminal = "kitty";
-    package = pkgs.rofi-wayland;
-    font = "CaskaydiaCove NF";
-    theme = ./rofi.rasi;
-  };
-
   programs.home-manager = {
     enable = true;
   };

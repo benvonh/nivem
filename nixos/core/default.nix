@@ -1,12 +1,12 @@
 { inputs, outputs, lib, config, pkgs, ... }:
 let
-  host = config.networking.hostName;
+  # default, rei, ken, silvia, catppuccin-[latte,...,mocha]
+  sddm-theme = inputs.silent-sddm.packages.${pkgs.system}.default.override {
+    theme = "default";
+  };
 in
 {
-  imports = [
-    inputs.sugar-candy.nixosModules.default
-    inputs.home-manager.nixosModules.home-manager
-  ];
+  imports = [ inputs.home-manager.nixosModules.home-manager ];
   
   ################################################
   #                 NIX SETTINGS                 #
@@ -29,13 +29,7 @@ in
     };
   };
 
-  nixpkgs = {
-    overlays = [
-      inputs.hyprpanel.overlay
-      inputs.ulauncher.overlays.default
-    ];
-    config.allowUnfree = true;
-  };
+  nixpkgs.config.allowUnfree = true;
 
   ###################################################
   #                 SYSTEM SETTINGS                 #
@@ -56,43 +50,6 @@ in
     pulse.enable = true;
   };
 
-  services.displayManager.sddm = {
-    enable = true;
-    wayland = {
-      enable = true;
-      compositor = "kwin";
-    };
-    settings.Theme =  {
-      CursorTheme = "Bibata-Modern-Ice";
-      CursorSize = 20;
-    };
-    sugarCandyNix = {
-      enable = true;
-      settings = let
-        resolutionForHost = {
-          fractal = { w = 1920; h = 1080; };
-          zephyrus = { w = 1920; h = 1200; };
-        };
-        resolution =
-          if resolutionForHost ? ${host} then
-            resolutionForHost.${host}
-          else
-            throw "[nivem] host = ${host}";
-      in {
-        Font = "CaskaydiaCove NF";
-        MainColor = "#E9F5FF"; 
-        Background = lib.cleanSource ./assets/norway-river.jpg;
-        HeaderText = "Powered by nivem  ";
-        AccentColor = "#E9FFF5";
-        PartialBlur = true;
-        ScreenWidth = resolution.w;
-        ScreenHeight = resolution.h;
-        BackgroundColor = "#000000";
-        HaveFormBackground = true;
-      };
-    };
-  };
-
   boot = {
     loader = {
       systemd-boot.enable = true;
@@ -103,6 +60,23 @@ in
     extraModprobeConfig = "options snd_hda_intel power_save=0";
     # Mounts '/tmp' to RAM
     tmp.useTmpfs = true;
+  };
+
+  #################################################
+  #                 LOGIN MANAGER                 #
+  #################################################
+  services.displayManager.sddm = {
+    enable = true;
+    wayland.enable = true;
+    theme = sddm-theme.pname;
+    package = pkgs.kdePackages.sddm;
+    extraPackages = sddm-theme.propagatedBuildInputs;
+    settings = {
+      General = {
+        GreeterEnvironment = "QML2_IMPORT_PATH=${sddm-theme}/share/sddm/themes/${sddm-theme.pname}/components/,QT_IM_MODULE=qtvirtualkeyboard";
+        InputMethod = "qtvirtualkeyboard";
+      };
+    };
   };
 
   #################################################
@@ -117,7 +91,6 @@ in
       ./home.nix 
       ./hypr.nix
     ];
-    backupFileExtension = "bak";
   };
 
   users.users.ben = {
@@ -136,7 +109,6 @@ in
   # `fc-match 'font name'`
   fonts = {
     packages = with pkgs; [
-      (nerdfonts.override { fonts = [ "CascadiaCode" ]; })
       noto-fonts-monochrome-emoji
       noto-fonts-emoji-blob-bin
       noto-fonts-color-emoji
@@ -155,20 +127,15 @@ in
   environment.sessionVariables.XCURSOR_THEME = "Bibata-Modern-Ice";
 
   environment.systemPackages = with pkgs; [
-    # TODO: Uhhh do I still need?
-    # libsForQt5.qt5.qtgraphicaleffects
-    # TODO: Where is the best place for these?
-    gnome-system-monitor
-    gnome-disk-utility
-    gnome-calculator
-    mission-center
     bibata-cursors
+    discord
+    gnome-calculator
+    gnome-disk-utility
+    gnome-system-monitor
+    gpu-screen-recorder
+    mission-center
     obs-studio
-    celluloid
-    libnotify
-    nautilus
-    discord 
-    brave 
+    sddm-theme
   ];
 
   programs.hyprland = {
@@ -181,12 +148,15 @@ in
   programs.zsh.enable = true;
   programs.uwsm.enable = true;
   programs.steam.enable = true;
-  programs.hyprlock.enable = true;
-  programs.nm-applet.enable = true;
+  # programs.nm-applet.enable = true;
 
   # We don't use nano here...
   programs.nano.enable = false;
 
   services.gvfs.enable = true;
-  services.hypridle.enable = true;
+
+  systemd.tmpfiles.rules = [
+    "L /var/lib/AccountsService/icons/ben - - - - ${./assets/rezero.png}"
+  ];
+
 }

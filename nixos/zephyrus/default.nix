@@ -4,6 +4,12 @@
     inputs.hardware.nixosModules.asus-zephyrus-ga402
   ];
 
+  networking.firewall = {
+    enable = true;
+    allowedTCPPorts = [ 51926 ];
+    allowedUDPPorts = [ 51926 ];
+  };
+
   networking.hostName = "zephyrus";
 
   programs.nm-applet.enable = true;
