@@ -1,4 +1,4 @@
-> nivem: accusative singular of **nix** :snowflake:
+> nivem: accusative singular of *nix* :snowflake:
 
 # nivem
 
@@ -10,135 +10,66 @@ https://github.com/user-attachments/assets/682b669c-7ae4-4cf6-b765-6b186498363f
 
 ## Installation
 
-
 <details>
-<summary style="font-size: 1.5em; font-weight: bold;">## Hi</summary>
-## Online Install (Home Manager)
+<summary>Online Install (Home Manager)</summary>
+*Install a configuration without cloning the repository.*
 
-**Install a configuration without cloning this repository.**
-
-1. If Home Manager is not installed and experimental features are not enabled, run
+1. If not already done, enable flakes and prepare Home Manager.
 ```sh
 nix develop --extra-experimental-features 'nix-command flakes' github:benvonh/nivem
 ```
 
 2. Install the Home Manager configuration of your choice.
 ```sh
-home-manager switch --flake github:benvonh/nivem#$USER
+home-manager switch --flake github:benvonh/nivem#your-config
 ```
-where `$USER` is an attribute in the `homeConfigurations` set inside the `flake.nix` file.
 
-May be omitted to automatically read from the shell environment.
-
+You may omit `#your-config` to default to `$USER`.
 
 
-## Full Install (Home Manager)
+</details>
 
-**Configure Home Manager on a non-NixOS system.**
+<details>
+<summary>Full Install (NixOS)</summary>
+*Install a configuration locally for NixOS and Home Manager.*
 
-:warning: Symlinks will be created in your home directory.
-
-1. Clone this repository; and enter the custom shell if experimental features are not enabled.
+1. Clone this repository and enter my custom shell.
 ```sh
 git clone https://github.com/benvonh/nivem ~/nivem
-
-# For noobs
 nix develop --extra-experimental-features 'nix-command flakes' ~/nivem
 ```
 
-2. Create a Home Manager configuration and add to the flake.
+2. Create a Home Manager configuration.
 ```sh
 mkdir ~/nivem/home-manager/$USER
 
-# Create configuration...
-# Refer to 
-
-# Add to 'homeConfigurations'
-vim ~/nivem/flake.nix
+# Refer to other configs for guidance
+vim ~/nivem/home-manager/$USER/default.nix
 ```
 
-3. Install the Home Manager configuration.
+3. Create a NixOS configuration.
 ```sh
-home-manager switch --flake .#$USER@$HOST
-```
-where `$USER` is an attribute in the `homeConfigurations` set inside the `flake.nix` file.
-
-## Full Install (Home Manager + NixOS)
-
-**Configure NixOS and Home Manager locally through this flake.**
-
-1. Clone this repository.
-```bash
-git clone https://github.com/benvonh/nivem ~/nivem
-```
-
-2. Create a NixOS configuration.
-```bash
 mkdir ~/nivem/nixos/$HOST
-
 cp /etc/nixos/hardware-configuration.nix ~/nivem/nixos/$HOST
 
-# Refer to an existing `default.nix` under `nixos/` to get started
+# Refer to other configs for guidance
 vim ~/nivem/nixos/$HOST/default.nix
 ```
 
-4. Add the configuration to the flake and switch to it.
-```bash
+4. Add the configurations to the flake and switch to it.
+```sh
 vim ~/nivem/flake.nix
 
-cd ~/nivem; git add .
+cd ~/nivem
+git add .
 
-sudo nixos-rebuild switch --flake ~/nivem
+sudo nixos-rebuild switch --flake ~/nivem#your-config
 ```
-Append `#$HOST` and `#$USER@$HOST` to the switch commands (no space) if the correct values are not set in the environment variables.
+
+You may omit `#your-config` to default to `$HOST`. Also note that this NixOS setup imports Home Manager directly.
+
+:warning: Make sure to change personal settings such as Git username and hardware modules.
+</details>
 
 ---
-### For The Impatient
-
-If you want a quick start to using my configurations,
-replace the below references, `$USER` and `$HOST`, in each of the files.
-
-**NixOS**
-
-[`flake.nix`](flake.nix)
-```nix
-nixosConfigurations = {
-  $HOST = nixpkgs.lib.nixosSystem {
-    specialArgs = { inherit inputs outputs; };
-    modules = [ ./nixos/$HOST ];
-  };
-};
-```
-[`nixos/$HOST/default.nix`](nixos/zephyrus/default.nix)
-```bash
-networking.hostName = "$HOST";
-...
-users.users.$USER = {
-  home = "/home/$USER";
-};
-```
-
-**Home Manager**
-
-[`flake.nix`](flake.nix)
-```nix
-homeConfigurations = {
-  "$USER@$HOST" = home-manager.lib.homeManagerConfiguration {
-    extraSpecialArgs = { inherit inputs outputs; };
-    modules = [ ./home-manager/ben ];
-    pkgs = pkgsFor.x86_64-linux;
-  };
-};
-```
-[`home-manager/$USER/default.nix`](home-manager/ben/default.nix)
-```nix
-home = {
-  username = "$USER";
-  homeDirectory = "/home/$USER";
-};
-```
-
-:warning: Make sure to change personal settings such as Git username and imported NixOS hardware modules.
-
----
-Special thanks to [Misterio77](https://github.com/misterio77) for creating the [nix-starter-configs](https://github.com/misterio77/nix-starter-configs)!
+Special thanks to [Misterio77](https://github.com/misterio77) for his [nix-starter-configs](https://github.com/misterio77/nix-starter-configs)!

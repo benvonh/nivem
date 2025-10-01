@@ -12,7 +12,17 @@ in
 
   wayland.windowManager.hyprland = {
     enable = true;
-    settings = {
+
+    settings = let
+      theme = {
+        name = config.gtk.theme.name;
+        cursor = {
+          name = config.gtk.cursorTheme.name;
+          size = toString config.gtk.cursorTheme.size;
+        };
+      };
+    in
+    {
       monitor = let
         displayForHost = {
           zephyrus = "eDP-2";
@@ -23,47 +33,47 @@ in
             displayForHost.${host}
           else
             throw "[nivem] host = ${host}";
-      in [
+      in
+      [
         # display, resolution, position, scale
         "${display}, highrr, auto, 1"
-        ", preferred, auto, 1"
+        ", highrr, auto, 1"
       ];
 
       env = [
         "TERM, kitty"
         "EDITOR, nvim"
-        "GTK_THEME, ${config.gtk.theme.name}"
-        "XCURSOR_THEME, ${config.gtk.cursorTheme.name}"
-        "XCURSOR_SIZE, ${toString config.gtk.cursorTheme.size}"
-        "HYPRCURSOR_THEME, ${config.gtk.cursorTheme.name}"
-        "HYPRCURSOR_SIZE, ${toString config.gtk.cursorTheme.size}"
+        "GTK_THEME, ${theme.name}"
+        "XCURSOR_THEME, ${theme.cursor.name}"
+        "XCURSOR_SIZE, ${theme.cursor.size}"
+        "HYPRCURSOR_THEME, ${theme.cursor.name}"
+        "HYPRCURSOR_SIZE, ${theme.cursor.size}"
         "QS_ICON_THEME, ${config.gtk.iconTheme.name}"
       ];
 
       exec-once = [
-        "${pkgs.discord}/bin/discord"
-        "hyprctl setcursor ${config.gtk.cursorTheme.name} ${toString config.gtk.cursorTheme.size}"
+        "hyprctl setcursor ${theme.cursor.name} ${theme.cursor.size}"
       ];
 
       general = {
         layout = "master";
         gaps_in = 10;
         gaps_out = 20;
-        border_size = 1;
+        border_size = 0;
         resize_on_border = true;
       };
 
       decoration = {
-        rounding = 25;
+        rounding = 0;
         blur = {
           size = 7;
           passes = 2;
         };
         shadow = {
-          range = 15;
-          render_power = 1;
-          color = "rgba(0,0,0, 1)";
-          color_inactive = "rgba(0,0,0, 0.5)";
+          range = 20;
+          render_power = 2;
+          color = "rgba(0,0,0, 0.9)";
+          color_inactive = "rgba(0,0,0, 0.6)";
         };
       };
 
@@ -74,11 +84,14 @@ in
         ];
         animation = [
           # name, on/off, speed, curve [,style]
-          "windowsIn  , 1, 3, jiggle, slide"
-          "windowsMove, 1, 3, jiggle, slide"
-          "workspaces , 1, 3, jiggle, slidefade"
-          "windowsOut , 1, 3,  close, slide"
           "fadeOut    , 1, 3,  close"
+          # "windowsIn  , 1, 3, jiggle, slide"
+          "windowsIn  , 1, 3, jiggle, gnomed"
+          # "windowsMove, 1, 3, jiggle, slide"
+          "windowsMove, 1, 3, jiggle, gnomed"
+          # "windowsOut , 1, 3,  close, slide"
+          "windowsOut , 1, 3,  close, gnomed"
+          "workspaces , 1, 3, jiggle, slidefade"
         ];
       };
 
@@ -113,14 +126,13 @@ in
         "     ,    F10, togglefloating,"
         "     ,    F11, fullscreen,"
         "  ALT,     F4, killactive,"
-        "SUPER, $ENTER, exec, ${pkgs.kitty}/bin/kitty"
-        "SUPER,      B, exec, ${pkgs.brave}/bin/brave"
-        "SUPER,      F, exec, ${pkgs.nautilus}/bin/nautilus"
+        "SUPER,      B, exec, zen"
+        "SUPER, $ENTER, exec, kitty"
+        "SUPER,      F, exec, nautilus"
         "SUPER,      L, exec, caelestia shell lock lock"
-        "SUPER, $SPACE, exec, caelestia shell drawers toggle launcher"
         "SUPER,      M, exec, caelestia shell drawers toggle sidebar"
+        "SUPER, $SPACE, exec, caelestia shell drawers toggle launcher"
 
-        # master layout key binding
         "SUPER      ,      J, layoutmsg, cyclenext"
         "SUPER      ,      K, layoutmsg, cycleprev"
         "SUPER      ,      I, layoutmsg, addmaster"

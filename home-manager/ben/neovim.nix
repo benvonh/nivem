@@ -5,8 +5,8 @@
   programs.nixvim = {
     enable = true;
 
-    # colorscheme = "catppuccin";
-    colorscheme = "gruvbox";
+    colorscheme = "catppuccin";
+    # colorscheme = "gruvbox";
 
     colorschemes = {
       gruvbox.enable = true;
@@ -69,7 +69,7 @@
     autoCmd = [
       {
         event = "FileType";
-        pattern = [ "c" "cpp" "nix" ];
+        pattern = [ "nix" ];
         command = "setlocal tabstop=2 shiftwidth=2 softtabstop=2";
       }
     ];
@@ -114,7 +114,6 @@
       { mode = "n"; key = "<leader>t"; action = "<cmd>vsplit<bar>terminal<cr>"; options.desc = "Open terminal"; }
       { mode = "n"; key = "<leader>c"; action = "<cmd>bp<bar>sp<bar>bn<bar>bd<cr>"; options.desc = "Close buffer"; }
 
-      # TODO: More telescope commands that I can add :)
       { mode = "n"; key = "<leader>o"; action = "<cmd>TodoTelescope<cr>"; options.desc = "Search TODO"; }
       { mode = "n"; key = "<leader>."; action = "<cmd>SessionSearch<cr>"; options.desc = "Search session"; }
       { mode = "n"; key = "<leader>b"; action = "<cmd>Telescope buffers<cr>"; options.desc = "Open Buffer"; }
@@ -136,13 +135,15 @@
     ############################################
     #                 PLUG-INS                 #
     ############################################
+    plugins.colorizer.enable = true;
     plugins.comment.enable = true;
+    # plugins.copilot-vim.enable = true;
     plugins.fugitive.enable = true;
     plugins.gitsigns.enable = true;
     plugins.lastplace.enable = true;
     plugins.markdown-preview.enable = true;
     plugins.nix.enable = true;
-    plugins.nvim-colorizer.enable = true;
+    plugins.notify.enable = true;
     plugins.rainbow-delimiters.enable = true;
     plugins.scrollview.enable = true;
     plugins.tmux-navigator.enable = true;
@@ -178,8 +179,8 @@
     plugins.dashboard = {
       enable = true;
       settings.config = {
-        project.enable = false;
-        footer = [ " neovim powered by nix  " ];
+        # project.enable = false;
+        footer = [ " neovim by nix  " ];
         header = [
           "███╗   ██╗██╗██╗  ██╗██╗   ██╗██╗███╗   ███╗"
           "████╗  ██║██║╚██╗██╔╝██║   ██║██║████╗ ████║"
@@ -203,20 +204,23 @@
     };
 
     plugins.noice = {
-      enable = true;
-      settings.lsp = {
-        progress.enabled = false;
-        override = {
-          "cmp.entry.get_documentation" = true;
-          "vim.lsp.util.stylize_markdown" = true;
-          "vim.lsp.util.convert_input_to_markdown_lines" = true;
+      enable = false;
+      settings = {
+        cmdline = {
+          format.filter = {
+            icon = "$";
+            lang = "zsh";
+            pattern = "^:%s*!";
+          };
+        # lsp = {
+          # progress.enabled = false;
+          # override = {
+          #   "cmp.entry.get_documentation" = true;
+          #   "vim.lsp.util.stylize_markdown" = true;
+          #   "vim.lsp.util.convert_input_to_markdown_lines" = true;
+          # };
         };
       };
-    };
-
-    plugins.notify = {
-      enable = true;
-      topDown = false;
     };
 
     plugins.nvim-autopairs = {
@@ -228,6 +232,7 @@
       };
     };
 
+    # TODO: Change?
     plugins.nvim-tree = {
       enable = true;
       git.ignore = false;
@@ -257,7 +262,7 @@
       settings = {
         defaults = {
           prompt_prefix = "  ";
-          selection_caret = "󰓾 ";
+          selection_caret = "*";
           sorting_strategy = "ascending";
           layout_config.prompt_position = "top";
         };

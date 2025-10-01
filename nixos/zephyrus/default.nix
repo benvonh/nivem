@@ -4,6 +4,7 @@
     inputs.hardware.nixosModules.asus-zephyrus-ga402
   ];
 
+  # Minecraft
   networking.firewall = {
     enable = true;
     allowedTCPPorts = [ 51926 ];
@@ -11,11 +12,7 @@
   };
 
   networking.hostName = "zephyrus";
-
-  programs.nm-applet.enable = true;
-
   services.upower.enable = true;
-  services.blueman.enable = true;
   services.libinput.enable = true;
   services.power-profiles-daemon.enable = true;
 

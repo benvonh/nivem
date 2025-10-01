@@ -1,50 +1,11 @@
 { config, pkgs, ... }:
 {
-  home.packages = [
-    pkgs.ripgrep
-    pkgs.fd
-  ];
-
-  programs.eza = {
-    enable = true;
-    git = true;
-    icons = "auto";
-    extraOptions = [ "--group-directories-first" ];
-  };
-
-  programs.bat = {
-    enable = true;
-    config.theme = "Visual Studio Dark+";
-    extraPackages = with pkgs.bat-extras; [
-      batman batdiff batwatch
-    ];
-  };
-
-  programs.fzf.enable = true;
-  # TODO: config
-  programs.btop.enable = true;
-  programs.zoxide.enable = true;
-  programs.starship.enable = true;
-
-  programs.ranger = {
-    enable = true;
-    extraPackages = [
-      pkgs.python3Packages.pillow
-    ];
-    settings = {
-      draw_borders = "both";
-      preview_images = true;
-      preview_images_method = "kitty";
-    };
-  };
-
   programs.zsh = {
     enable = true;
     dotDir = ".config/zsh";
     defaultKeymap = "emacs";
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
-
     shellAliases = {
       ga = "git add";
       gd = "git diff";
@@ -54,10 +15,9 @@
       ngc = "nix-collect-garbage -d";
       hms = "home-manager switch --flake ~/nivem";
       nrs = "sudo nixos-rebuild switch --flake ~/nivem";
-      vim = "nvim";
+      # vim = "nvim";
     };
-
-    initExtra = ''
+    initContent = ''
       function nrn {
         if [ $# -eq 0 ]; then
           echo "usage: nrn <package> [<arguments>]"
@@ -90,7 +50,6 @@
 
       ${pkgs.microfetch}/bin/microfetch
     '';
-
     plugins = [ {
       name = "notify";
       src = pkgs.fetchFromGitHub {
@@ -100,12 +59,10 @@
         sha256 = "sha256-d0MD3D4xiYVhMIjAW4npdtwHSobq6yEqyeSbOPq3aQM";
       };
     } ];
-
     sessionVariables = {
       OPENER = "bat";
       PAGER = "bat --force-colorization --paging=always --style=full";
     };
-
     history = {
       ignoreAllDups = true;
       expireDuplicatesFirst = true;
@@ -122,7 +79,6 @@
     # shortcut = "v";
     terminal = "screen-256color";
     shell = "${pkgs.zsh}/bin/zsh";
-
     plugins = with pkgs.tmuxPlugins; [
       {
         plugin = resurrect;

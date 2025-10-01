@@ -1,9 +1,7 @@
 { inputs, outputs, lib, config, pkgs, ... }:
 let
   # default, rei, ken, silvia, catppuccin-[latte,...,mocha]
-  sddm-theme = inputs.silent-sddm.packages.${pkgs.system}.default.override {
-    theme = "default";
-  };
+  sddm-theme = inputs.silent-sddm.packages.${pkgs.system}.default.override { theme = "rei"; };
 in
 {
   imports = [ inputs.home-manager.nixosModules.home-manager ];
@@ -103,19 +101,16 @@ in
     ];
   };
 
-  # NOTE: fontconfig tips...
-  # `fc-cache -r`
-  # `fc-list | bat`
-  # `fc-match 'font name'`
   fonts = {
     packages = with pkgs; [
-      noto-fonts-monochrome-emoji
-      noto-fonts-emoji-blob-bin
-      noto-fonts-color-emoji
-      noto-fonts-cjk-serif
-      noto-fonts-cjk-sans
-      noto-fonts-lgc-plus
+      nerd-fonts.caskaydia-cove
       noto-fonts
+      noto-fonts-cjk-sans
+      noto-fonts-cjk-serif
+      noto-fonts-color-emoji
+      noto-fonts-emoji-blob-bin
+      noto-fonts-lgc-plus
+      noto-fonts-monochrome-emoji
     ];
     fontconfig.defaultFonts = {
       monospace = [ "CaskaydiaCove NF" ];
@@ -128,14 +123,17 @@ in
 
   environment.systemPackages = with pkgs; [
     bibata-cursors
+    clapper
     discord
     gnome-calculator
     gnome-disk-utility
     gnome-system-monitor
-    gpu-screen-recorder
+    gpu-screen-recorder-gtk
     mission-center
+    nautilus
     obs-studio
     sddm-theme
+    vscode
   ];
 
   programs.hyprland = {
@@ -148,7 +146,7 @@ in
   programs.zsh.enable = true;
   programs.uwsm.enable = true;
   programs.steam.enable = true;
-  # programs.nm-applet.enable = true;
+  programs.gpu-screen-recorder.enable = true;
 
   # We don't use nano here...
   programs.nano.enable = false;
@@ -158,5 +156,4 @@ in
   systemd.tmpfiles.rules = [
     "L /var/lib/AccountsService/icons/ben - - - - ${./assets/rezero.png}"
   ];
-
 }

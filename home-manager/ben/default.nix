@@ -1,41 +1,51 @@
-{ lib, pkgs, ... }:
+{ inputs, lib, pkgs, ... }:
 {
-  imports = [ ./zsh.nix ./neovim.nix ];
+  imports = [
+    inputs.zen-browser.homeModules.beta
+    ./neovim.nix
+    ./zsh.nix
+  ];
 
   nix.package = lib.mkDefault pkgs.nix;
   nix.settings.experimental-features = "nix-command flakes";
 
-  # TODO: Maybe only needed in NixOS config?
-  # fonts.fontconfig = {
-  #   enable = true;
-  #   defaultFonts = {
-  #     serif = [ "Ubuntu Sans" ];
-  #     sansSerif = [ "Ubuntu Sans" ];
-  #     monospace = [ "CaskaydiaCove NF" ];
-  #   };
-  # };
-
-  #################################################
-  #                 USER SETTINGS                 #
-  #################################################
   home = {
     username = "ben";
     homeDirectory = "/home/ben";
-    stateVersion = "24.11";
+    stateVersion = "25.05";
     packages = with pkgs; [
-      wl-clipboard # Copy-paste in Wayland
-      nodejs # Bunch of things may need it
-      tldr
+      fd
       neovide
+      nodejs # Bunch of things may need it
+      ripgrep
+      tldr
+      wl-clipboard # Copy-paste in Wayland
     ];
   };
 
-  programs.home-manager = {
+  programs.btop.enable = true;
+  programs.fzf.enable = true;
+  programs.gh.enable = true;
+  programs.home-manager.enable = true;
+  programs.htop.enable = true;
+  programs.starship.enable = true;
+  programs.zen-browser.enable = true;
+  programs.zoxide.enable = true;
+
+  programs.eza = {
     enable = true;
+    git = true;
+    icons = "auto";
+    extraOptions = [ "--group-directories-first" ];
   };
 
-  programs.htop.enable = true;
-  programs.gh.enable = true;
+  programs.bat = {
+    enable = true;
+    config.theme = "Visual Studio Dark+";
+    extraPackages = with pkgs.bat-extras; [
+      batman batdiff batwatch
+    ];
+  };
 
   programs.git = {
     enable = true;
@@ -44,19 +54,30 @@
     extraConfig.pull.rebase = false;
   };
 
+  programs.ranger = {
+    enable = true;
+    extraPackages = [
+      pkgs.python3Packages.pillow
+    ];
+    settings = {
+      draw_borders = "both";
+      preview_images = true;
+      preview_images_method = "kitty";
+    };
+  };
+
   programs.kitty = {
     enable = true;
-    themeFile = "gruvbox-dark";
+    themeFile = "Catppuccin-Mocha";
     shellIntegration.mode = "no-cursor";
     settings = {
-      cursor_trail = 10;
+      cursor_trail = 8;
       window_padding_width = 8;
     };
     font = {
-      size = 11;
+      size = 12;
       name = "CaskaydiaCove NF";
-      # name = "Departure Mono";
-      # package = pkgs.departure-mono;
+      package = pkgs.nerd-fonts.caskaydia-cove;
     };
   };
 }
