@@ -50,7 +50,7 @@
       let pkgs = pkgsFor.${system}; in {
         default = pkgs.mkShell {
           NIX_CONFIG = "experimental-features = nix-command flakes";
-          packages = with pkgs; [ nix git vim home-manager ];
+          packages = [ pkgs.nix pkgs.git pkgs.vim pkgs.home-manager ];
         };
       });
 
