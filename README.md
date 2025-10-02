@@ -1,8 +1,14 @@
-> nivem: accusative singular of *nix* :snowflake:
+> *nivem*: accusative singular of *nix* :snowflake:
 
 # nivem
 
 My NixOS and Home Manager configurations in a Nix flake.
+
+
+Features:
+- Hyprland
+- Caelestia Shell
+- Nixvim
 
 
 https://github.com/user-attachments/assets/682b669c-7ae4-4cf6-b765-6b186498363f
@@ -43,7 +49,7 @@ nix develop --extra-experimental-features 'nix-command flakes' ~/nivem
 ```sh
 mkdir ~/nivem/home-manager/$USER
 
-# Refer to other configs for guidance
+# See other configs for reference
 vim ~/nivem/home-manager/$USER/default.nix
 ```
 
@@ -52,7 +58,7 @@ vim ~/nivem/home-manager/$USER/default.nix
 mkdir ~/nivem/nixos/$HOST
 cp /etc/nixos/hardware-configuration.nix ~/nivem/nixos/$HOST
 
-# Refer to other configs for guidance
+# See other configs for reference
 vim ~/nivem/nixos/$HOST/default.nix
 ```
 
@@ -66,7 +72,7 @@ git add .
 sudo nixos-rebuild switch --flake ~/nivem#your-config
 ```
 
-You may omit `#your-config` to default to `$HOST`. Also note that this NixOS setup imports Home Manager directly.
+You may omit `#your-config` to default to `$HOST`. Note that this NixOS setup imports Home Manager internally.
 
 :warning: Make sure to change personal settings such as Git username and hardware modules.
 </details>

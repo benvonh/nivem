@@ -103,6 +103,7 @@ in
 
   fonts = {
     packages = with pkgs; [
+      liberation_ttf
       nerd-fonts.caskaydia-cove
       noto-fonts
       noto-fonts-cjk-sans
@@ -129,6 +130,7 @@ in
     gnome-disk-utility
     gnome-system-monitor
     gpu-screen-recorder-gtk
+    loupe
     mission-center
     nautilus
     obs-studio

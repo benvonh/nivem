@@ -8,6 +8,7 @@ in
   programs.caelestia = {
     enable = true;
     cli.enable = true;
+    systemd.enable = false;
   };
 
   wayland.windowManager.hyprland = {
@@ -53,6 +54,7 @@ in
 
       exec-once = [
         "hyprctl setcursor ${theme.cursor.name} ${theme.cursor.size}"
+        "caelestia shell"
       ];
 
       general = {
@@ -167,8 +169,8 @@ in
       ];
 
       bindm = [
-        "SUPER, mouse:272, movewindow"
-        "SUPER, mouse:273, resizewindow"
+        "CTRL, mouse:272, movewindow"
+        "CTRL, mouse:273, resizewindow"
       ];
     };
 
