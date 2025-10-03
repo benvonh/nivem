@@ -34,8 +34,8 @@
         target = ".face";
       };
       wallpaper = {
-        source = ../../asset/wallpaper;
-        target = "${config.xdg.userDirs.pictures}/Wallpapers";
+        source = ../../asset/wallpaper.jpg;
+        target = "${config.xdg.userDirs.pictures}/Wallpapers/default.jpg";
       };
     };
   };

@@ -32,7 +32,7 @@ in
   ###################################################
   #                 SYSTEM SETTINGS                 #
   ###################################################
-  system.stateVersion = "24.11";
+  system.stateVersion = "25.05";
 
   i18n.defaultLocale = "en_AU.UTF-8";
 
@@ -41,11 +41,6 @@ in
   networking.networkmanager.enable = true;
 
   security.rtkit.enable = true;
-
-  security.polkit = {
-    enable = true;
-    package = pkgs.mate.mate-polkit;
-  };
 
   services.pipewire = {
     enable = true;
@@ -134,7 +129,6 @@ in
   environment.sessionVariables.XCURSOR_THEME = "Bibata-Modern-Ice";
 
   environment.systemPackages = with pkgs; [
-    inputs.quickshell.${system}.package
     bibata-cursors
     clapper
     discord

@@ -68,10 +68,10 @@
 
   programs.kitty = {
     enable = true;
-    # themeFile = "gruvbox";
+    themeFile = "gruvbox-dark";
     shellIntegration.mode = "no-cursor";
     settings = {
-      include = "${../../asset/Catppuccin-Nivem.conf}";
+      # include = "${../../asset/catppuccin-nivem.conf}";
       cursor_trail = 8;
       window_padding_width = 8;
     };

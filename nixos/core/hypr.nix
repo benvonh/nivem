@@ -72,7 +72,7 @@ in
       };
 
       decoration = {
-        rounding = 0;
+        rounding = 25;
         blur = {
           size = 7;
           passes = 2;

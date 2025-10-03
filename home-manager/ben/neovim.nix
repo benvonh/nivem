@@ -5,8 +5,8 @@
   programs.nixvim = {
     enable = true;
 
-    colorscheme = "catppuccin";
-    # colorscheme = "gruvbox";
+    # colorscheme = "catppuccin";
+    colorscheme = "gruvbox";
 
     colorschemes = {
       gruvbox.enable = true;
