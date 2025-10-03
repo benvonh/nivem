@@ -71,7 +71,7 @@
     # themeFile = "gruvbox";
     shellIntegration.mode = "no-cursor";
     settings = {
-      include = "${../../assets/Catppuccin-Nivem.conf}";
+      include = "${../../asset/Catppuccin-Nivem.conf}";
       cursor_trail = 8;
       window_padding_width = 8;
     };
@@ -81,9 +81,4 @@
       package = pkgs.nerd-fonts.caskaydia-cove;
     };
   };
-
-  # xdg.configFile.kitty-theme = {
-  #   source = ../../assets/Catppuccin-Nivem.conf;
-  #   target = "kitty/Catppuccin-Nivem.conf";
-  # };
 }

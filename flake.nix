@@ -14,11 +14,10 @@
     silent-sddm.url = "github:uiriansan/silentsddm";
     silent-sddm.inputs.nixpkgs.follows = "nixpkgs";
 
-    caelestia-shell.url = "github:caelestia-dots/shell";
-    # caelestia-shell.inputs.nixpkgs.follows = "nixpkgs";
-
     zen-browser.url = "github:0xc000022070/zen-browser-flake";
     zen-browser.inputs.nixpkgs.follows = "nixpkgs";
+
+    caelestia-shell.url = "github:caelestia-dots/shell";
 
     hardware.url = "github:nixos/nixos-hardware";
   };

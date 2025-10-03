@@ -30,11 +30,11 @@
     };
     file = {
       pfp = {
-        source = ./assets/rezero.png;
+        source = ../../asset/rezero.png;
         target = ".face";
       };
       wallpaper = {
-        source = ../../wallpapers/anime;
+        source = ../../asset/wallpaper;
         target = "${config.xdg.userDirs.pictures}/Wallpapers";
       };
     };

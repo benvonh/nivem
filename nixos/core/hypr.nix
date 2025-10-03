@@ -34,10 +34,16 @@ in
             displayForHost.${host}
           else
             throw "[nivem] host = ${host}";
+
+            resolutionForHost = {
+              fractal = "1920x1080@144";
+            };
+            resolution = if resolutionForHost ? ${host} then
+              resolutionForHost.${host} else throw "TODO";
       in
       [
         # display, resolution, position, scale
-        "${display}, highrr, auto, 1"
+        "${display},${resolution}, auto, 1"
         ", highrr, auto, 1"
       ];
 
@@ -154,9 +160,13 @@ in
         "SUPER      ,   1,       workspace      , 1"
         "SUPER      ,   2,       workspace      , 2"
         "SUPER      ,   3,       workspace      , 3"
+        "SUPER      ,   4,       workspace      , 4"
+        "SUPER      ,   5,       workspace      , 5"
         "SUPER SHIFT,   1, movetoworkspacesilent, 1"
         "SUPER SHIFT,   2, movetoworkspacesilent, 2"
         "SUPER SHIFT,   3, movetoworkspacesilent, 3"
+        "SUPER SHIFT,   4, movetoworkspacesilent, 4"
+        "SUPER SHIFT,   5, movetoworkspacesilent, 5"
 
         ", XF86MonBrightnessUp  , exec, caelestia shell brightness set +0.1"
         ", XF86MonBrightnessDown, exec, caelestia shell brightness set 0.1-"

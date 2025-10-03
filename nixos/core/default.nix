@@ -42,6 +42,11 @@ in
 
   security.rtkit.enable = true;
 
+  security.polkit = {
+    enable = true;
+    package = pkgs.mate.mate-polkit;
+  };
+
   services.pipewire = {
     enable = true;
     alsa.enable = true;
@@ -91,14 +96,18 @@ in
     ];
   };
 
-  users.users.ben = {
-    shell = pkgs.zsh;
-    home = "/home/ben";
-    isNormalUser = true;
-    extraGroups = [
-      "networkmanager"
-      "wheel"
-    ];
+  users.users = {
+    root.initialPassword = "nixos";
+    ben = {
+      shell = pkgs.zsh;
+      home = "/home/ben";
+      isNormalUser = true;
+      initialPassword = "nixos";
+      extraGroups = [
+        "networkmanager"
+        "wheel"
+      ];
+    };
   };
 
   fonts = {
@@ -112,17 +121,20 @@ in
       noto-fonts-emoji-blob-bin
       noto-fonts-lgc-plus
       noto-fonts-monochrome-emoji
+      texlivePackages.nunito
+      times-newer-roman
     ];
     fontconfig.defaultFonts = {
       monospace = [ "CaskaydiaCove NF" ];
-      sansSerif = [ "Noto Sans" ];
-      serif = [ "Noto Serif" ];
+      sansSerif = [ "Nunito" ];
+      serif = [ "Times Newer Roman" ];
     };
   };
 
   environment.sessionVariables.XCURSOR_THEME = "Bibata-Modern-Ice";
 
   environment.systemPackages = with pkgs; [
+    inputs.quickshell.${system}.package
     bibata-cursors
     clapper
     discord
@@ -134,6 +146,7 @@ in
     mission-center
     nautilus
     obs-studio
+    pavucontrol
     sddm-theme
     vscode
   ];
@@ -156,6 +169,6 @@ in
   services.gvfs.enable = true;
 
   systemd.tmpfiles.rules = [
-    "L /var/lib/AccountsService/icons/ben - - - - ${./assets/rezero.png}"
+    "L /var/lib/AccountsService/icons/ben - - - - ${../../asset/rezero.png}"
   ];
 }
