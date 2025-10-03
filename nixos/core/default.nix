@@ -116,12 +116,13 @@ in
       noto-fonts-emoji-blob-bin
       noto-fonts-lgc-plus
       noto-fonts-monochrome-emoji
-      texlivePackages.nunito
+      # texlivePackages.nunito
+      inter
       times-newer-roman
     ];
     fontconfig.defaultFonts = {
       monospace = [ "CaskaydiaCove NF" ];
-      sansSerif = [ "Nunito" ];
+      sansSerif = [ "Inter" ];
       serif = [ "Times Newer Roman" ];
     };
   };

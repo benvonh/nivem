@@ -1,6 +1,7 @@
 { inputs, config, pkgs, osConfig, ... }:
 let
   host = osConfig.networking.hostName;
+  rounding = 15;
 in
 {
   imports = [ inputs.caelestia-shell.homeManagerModules.default ];
@@ -9,6 +10,18 @@ in
     enable = true;
     cli.enable = true;
     systemd.enable = false;
+    settings = {
+      general = {
+        apps = {
+          terminal = "kitty";
+          explorer = "nautilus";
+        };
+      };
+      border = {
+        rounding = rounding;
+        thickness = 1;
+      };
+    };
   };
 
   wayland.windowManager.hyprland = {
@@ -72,7 +85,7 @@ in
       };
 
       decoration = {
-        rounding = 25;
+        rounding = rounding;
         blur = {
           size = 7;
           passes = 2;
@@ -125,7 +138,7 @@ in
       
       master.mfact = 0.5;
 
-      windowrulev2 = [ "opacity 0.95 override 0.95 override 0.95, class:kitty" ];
+      windowrulev2 = [ "opacity 0.9 override 0.9 override 0.9, class:kitty" ];
 
       "$ENTER" = 36;
       "$SPACE" = 65;
