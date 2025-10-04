@@ -1,9 +1,48 @@
 { inputs, config, pkgs, osConfig, ... }:
 let
   host = osConfig.networking.hostName;
-  rounding = 15;
 in
 {
+  gtk = {
+    enable = true;
+    theme = {
+      name = "Colloid-Dark";
+      package = pkgs.colloid-gtk-theme;
+    };
+    iconTheme = {
+      name = "Papirus-Dark";
+      package = pkgs.papirus-icon-theme;
+    };
+    cursorTheme = {
+      size = 20;
+      name = "Bibata-Modern-Ice";
+      package = pkgs.bibata-cursors;
+    };
+    font = {
+      size = 11;
+      name = "Sans";
+    };
+  };
+
+  home = {
+    pointerCursor = {
+      gtk.enable = true;
+      size = config.gtk.cursorTheme.size;
+      name = config.gtk.cursorTheme.name;
+      package = config.gtk.cursorTheme.package;
+    };
+    file = {
+      pfp = {
+        source = ../asset/rezero.png;
+        target = ".face";
+      };
+      wallpaper = {
+        source = ../asset/wallpaper.jpg;
+        target = "${config.xdg.userDirs.pictures}/Wallpapers/default.jpg";
+      };
+    };
+  };
+
   imports = [ inputs.caelestia-shell.homeManagerModules.default ];
 
   programs.caelestia = {
@@ -18,7 +57,7 @@ in
         };
       };
       border = {
-        rounding = rounding;
+        rounding = 0;
         thickness = 1;
       };
     };
@@ -26,8 +65,8 @@ in
 
   wayland.windowManager.hyprland = {
     enable = true;
-
     settings = let
+
       theme = {
         name = config.gtk.theme.name;
         cursor = {
@@ -35,28 +74,26 @@ in
           size = toString config.gtk.cursorTheme.size;
         };
       };
+
     in
     {
       monitor = let
         displayForHost = {
-          zephyrus = "eDP-2";
           fractal = "DP-2";
+          zephyrus = "eDP-2";
+          metabox = "eDP-1";
         };
-        display =
-          if displayForHost ? ${host} then
-            displayForHost.${host}
-          else
-            throw "[nivem] host = ${host}";
-
-            resolutionForHost = {
-              fractal = "1920x1080@144";
-            };
-            resolution = if resolutionForHost ? ${host} then
-              resolutionForHost.${host} else throw "TODO";
+        resolutionForHost = {
+          fractal = "1920x1080@144";
+          zephyrus = "1920x1200@144";
+          metabox = "1920x1080@120";
+        };
+        display = if displayForHost ? ${host} then displayForHost.${host} else "";
+        resolution = if resolutionForHost ? ${host} then resolutionForHost.${host} else "highrr";
       in
       [
         # display, resolution, position, scale
-        "${display},${resolution}, auto, 1"
+        "${display}, ${resolution}, auto, 1"
         ", highrr, auto, 1"
       ];
 
@@ -85,7 +122,7 @@ in
       };
 
       decoration = {
-        rounding = rounding;
+        rounding = 0;
         blur = {
           size = 7;
           passes = 2;
@@ -136,9 +173,13 @@ in
         new_window_takes_over_fullscreen = 2;
       };
       
-      master.mfact = 0.5;
+      master.mfact = 0.6;
 
-      windowrulev2 = [ "opacity 0.9 override 0.9 override 0.9, class:kitty" ];
+      # windowrulev2 = [ "opacity 0.9 override 0.9 override 0.9, class:kitty" ];
+      windowrule = [
+        "opacity 0.9, class:kitty"
+        "rounding 15, floating:1"
+      ];
 
       "$ENTER" = 36;
       "$SPACE" = 65;
@@ -192,11 +233,13 @@ in
       ];
 
       bindm = [
-        "ALT, mouse:272, movewindow"
-        "ALT, mouse:273, resizewindow"
+        "SUPER, mouse:272, movewindow"
+        "SUPER, mouse:273, resizewindow"
       ];
     };
 
     systemd.enable = false;
   };
+
+  systemd.user.startServices = "sd-switch";
 }

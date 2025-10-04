@@ -1,14 +1,13 @@
 {
-  description = "A NixOS and Home Manager configuration";
+  description = "My NixOS and Home Manager configurations";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
-    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
     home-manager.url = "github:nix-community/home-manager/release-25.05";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    nixvim.url = "github:nix-community/nixvim/nixos-25.05";
+    nixvim.url = "github:nix-community/nixvim";
     nixvim.inputs.nixpkgs.follows = "nixpkgs";
 
     silent-sddm.url = "github:uiriansan/silentsddm";
@@ -27,17 +26,44 @@
     inherit (self) outputs;
 
     systems = [
-      # Linux
       "i686-linux"
       "x86_64-linux"
       "aarch64-linux"
-      # Darwin
       "x86_64-darwin"
       "aarch64-darwin"
     ];
 
     pkgsFor = nixpkgs.legacyPackages;
     forAllSystems = nixpkgs.lib.genAttrs systems;
+
+    perHost = {
+      fractal = [
+        {
+          networking.hostName = "fractal";
+          services.xserver.videoDrivers = [ "nvidia" ];
+          hardware.nvidia.open = false;
+        }
+      ];
+      zephyrus = [
+        inputs.hardware.nixosModules.asus-zephyrus-ga402
+        {
+          networking.hostName = "zephyrus";
+
+          services.upower.enable = true;
+          services.libinput.enable = true;
+          services.power-profiles-daemon.enable = true;
+
+          hardware.bluetooth.enable = true;
+          hardware.bluetooth.powerOnBoot = false;
+        }
+      ];
+      metabox = [
+        {
+          networking.hostName = "metabox";
+          services.openssh.enable = true;
+        }
+      ];
+    };
   in
   {
     packages = forAllSystems (system:
@@ -53,25 +79,22 @@
         };
       });
 
-    nixosConfigurations = {
-      fractal = nixpkgs.lib.nixosSystem {
+    nixosConfigurations = nixpkgs.lib.genAttrs (builtins.attrNames perHost) (hostname:
+      nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs outputs; };
-        modules = [ ./nixos/core ./nixos/fractal ];
-      };
-      zephyrus = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit inputs outputs; };
-        modules = [ ./nixos/core ./nixos/zephyrus ];
-      };
-      meta = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit inputs outputs; };
-        modules = [ ./nixos/core ./nixos/meta ];
-      };
-    };
+        modules = (perHost.${hostname} or []) ++ [
+          (./nixos + "/${hostname}.nix")
+          ./nixos/core.nix
+        ];
+      });
 
     homeConfigurations = {
       ben = home-manager.lib.homeManagerConfiguration {
         extraSpecialArgs = { inherit inputs outputs; };
-        modules = [ ./home-manager/ben ];
+        modules = [
+          ./home-manager/core.nix
+          ./home-manager/neovim.nix
+        ];
         pkgs = pkgsFor.x86_64-linux;
       };
     };

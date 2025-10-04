@@ -1,11 +1,8 @@
 { inputs, outputs, lib, config, pkgs, ... }:
 let
-  # default, rei, ken, silvia, catppuccin-[latte,...,mocha]
-  sddm-theme = inputs.silent-sddm.packages.${pkgs.system}.default.override { theme = "rei"; };
+  sddm-theme = inputs.silent-sddm.packages.${pkgs.system}.default;
 in
 {
-  imports = [ inputs.home-manager.nixosModules.home-manager ];
-  
   ################################################
   #                 NIX SETTINGS                 #
   ################################################
@@ -48,15 +45,23 @@ in
     pulse.enable = true;
   };
 
+  services.gvfs.enable = true;
+
+  systemd.tmpfiles.rules = [
+    "L /var/lib/AccountsService/icons/ben - - - - ${../asset/rezero.png}"
+  ];
+
+  ###############################################
+  #                 BOOT LOADER                 #
+  ###############################################
   boot = {
     loader = {
       systemd-boot.enable = true;
-      systemd-boot.configurationLimit = 5;
+      systemd-boot.configurationLimit = 3;
       efi.canTouchEfiVariables = true;
     };
     # Fixes audio popping on suspend/resume playback
     extraModprobeConfig = "options snd_hda_intel power_save=0";
-    # Mounts '/tmp' to RAM
     tmp.useTmpfs = true;
   };
 
@@ -77,22 +82,26 @@ in
     };
   };
 
-  #################################################
-  #                 USER SETTINGS                 #
-  #################################################
+  ################################################
+  #                 HOME MANAGER                 #
+  ################################################
+  imports = [ inputs.home-manager.nixosModules.home-manager ];
+  
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
     extraSpecialArgs = { inherit inputs outputs; };
     users.ben.imports = [
-      ../../home-manager/ben
-      ./home.nix 
-      ./hypr.nix
+      ../../home-manager/core.nix
+      ../../home-manager/desktop.nix
+      ../../home-manager/neovim.nix
     ];
   };
 
+  #########################################
+  #                 USERS                 #
+  #########################################
   users.users = {
-    root.initialPassword = "nixos";
     ben = {
       shell = pkgs.zsh;
       home = "/home/ben";
@@ -105,9 +114,12 @@ in
     };
   };
 
+  #########################################
+  #                 FONTS                 #
+  #########################################
   fonts = {
     packages = with pkgs; [
-      liberation_ttf
+      inter
       nerd-fonts.caskaydia-cove
       noto-fonts
       noto-fonts-cjk-sans
@@ -116,8 +128,6 @@ in
       noto-fonts-emoji-blob-bin
       noto-fonts-lgc-plus
       noto-fonts-monochrome-emoji
-      # texlivePackages.nunito
-      inter
       times-newer-roman
     ];
     fontconfig.defaultFonts = {
@@ -127,6 +137,9 @@ in
     };
   };
 
+  ###############################################
+  #                 ENVIRONMENT                 #
+  ###############################################
   environment.sessionVariables.XCURSOR_THEME = "Bibata-Modern-Ice";
 
   environment.systemPackages = with pkgs; [
@@ -146,6 +159,9 @@ in
     vscode
   ];
 
+  ############################################
+  #                 PROGRAMS                 #
+  ############################################
   programs.hyprland = {
     enable = true;
     withUWSM = true;
@@ -156,14 +172,7 @@ in
   programs.zsh.enable = true;
   programs.uwsm.enable = true;
   programs.steam.enable = true;
-  programs.gpu-screen-recorder.enable = true;
 
   # We don't use nano here...
   programs.nano.enable = false;
-
-  services.gvfs.enable = true;
-
-  systemd.tmpfiles.rules = [
-    "L /var/lib/AccountsService/icons/ben - - - - ${../../asset/rezero.png}"
-  ];
 }
