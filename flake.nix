@@ -62,6 +62,10 @@
         specialArgs = { inherit inputs outputs; };
         modules = [ ./nixos/core ./nixos/zephyrus ];
       };
+      meta = nixpkgs.lib.nixosSystem {
+        specialArgs = { inherit inputs outputs; };
+        modules = [ ./nixos/core ./nixos/meta ];
+      };
     };
 
     homeConfigurations = {

@@ -146,7 +146,7 @@ in
       bind = [
         "     ,    F10, togglefloating,"
         "     ,    F11, fullscreen,"
-        "  ALT,     F4, killactive,"
+        "SUPER,      Q, killactive,"
         "SUPER,      B, exec, zen"
         "SUPER, $ENTER, exec, kitty"
         "SUPER,      F, exec, nautilus"
@@ -192,8 +192,8 @@ in
       ];
 
       bindm = [
-        "CTRL, mouse:272, movewindow"
-        "CTRL, mouse:273, resizewindow"
+        "ALT, mouse:272, movewindow"
+        "ALT, mouse:273, resizewindow"
       ];
     };
 
