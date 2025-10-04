@@ -92,9 +92,9 @@ in
     useUserPackages = true;
     extraSpecialArgs = { inherit inputs outputs; };
     users.ben.imports = [
-      ../../home-manager/core.nix
-      ../../home-manager/desktop.nix
-      ../../home-manager/neovim.nix
+      ../home-manager/core.nix
+      ../home-manager/desktop.nix
+      ../home-manager/neovim.nix
     ];
   };
 
