@@ -83,7 +83,8 @@
       nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs outputs; };
         modules = (perHost.${hostname} or []) ++ [
-          (./nixos + "/${hostname}.nix")
+          ./nixos/${hostname}.nix
+          # (./nixos + "/${hostname}.nix")
           ./nixos/core.nix
         ];
       });

@@ -58,7 +58,7 @@ in
       };
       border = {
         rounding = 0;
-        thickness = 1;
+        thickness = 2;
       };
     };
   };
@@ -158,10 +158,13 @@ in
         touchpad.natural_scroll = true;
       };
 
-      gestures = {
-        workspace_swipe = true;
-        workspace_swipe_min_speed_to_force = 15;
-      };
+      gesture = [
+        "3, horizontal, workspace"
+        "3, vertical, special"
+        "2, pinchout, fullscreen"
+        "2, pinchin, float, tile"
+        "4, swipe, float"
+      ];
 
       misc = {
         vrr = 0;
@@ -175,7 +178,6 @@ in
       
       master.mfact = 0.6;
 
-      # windowrulev2 = [ "opacity 0.9 override 0.9 override 0.9, class:kitty" ];
       windowrule = [
         "opacity 0.9, class:kitty"
         "rounding 15, floating:1"
@@ -233,8 +235,10 @@ in
       ];
 
       bindm = [
-        "SUPER, mouse:272, movewindow"
-        "SUPER, mouse:273, resizewindow"
+        "SUPER     , mouse:272, movewindow"
+        "SUPER     , mouse:273, resizewindow"
+        "CTRL_SHIFT, mouse:272, movewindow"
+        "CTRL_SHIFT, mouse:273, resizewindow"
       ];
     };
 
