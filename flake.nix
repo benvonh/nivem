@@ -60,6 +60,8 @@
       metabox = [
         {
           networking.hostName = "metabox";
+          services.xserver.videoDrivers = [ "nvidia" ];
+          hardware.nvidia.open = true;
           services.openssh.enable = true;
         }
       ];
