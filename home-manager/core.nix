@@ -139,8 +139,8 @@
 
   programs.zsh = {
     enable = true;
-    dotDir = ".config/zsh";
     defaultKeymap = "emacs";
+    dotDir = "${config.xdg.configHome}/zsh";
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
     shellAliases = {
@@ -179,8 +179,6 @@
 
         nix shell "''${pkgs[@]}"
       }
-
-      ${pkgs.microfetch}/bin/microfetch
     '';
     plugins = [ {
       name = "notify";
@@ -192,6 +190,7 @@
       };
     } ];
     sessionVariables = {
+      EDITOR = "nvim";
       OPENER = "bat";
       PAGER = "bat --force-colorization --paging=always --style=full";
     };

@@ -2,6 +2,8 @@
   description = "My NixOS and Home Manager configurations";
 
   inputs = {
+    private.url = "path:private";
+
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
     home-manager.url = "github:nix-community/home-manager";
@@ -33,39 +35,14 @@
       "aarch64-darwin"
     ];
 
+    hosts = [
+      "fractal"
+      "metabox"
+      "zephyrus"
+    ];
+
     pkgsFor = nixpkgs.legacyPackages;
     forAllSystems = nixpkgs.lib.genAttrs systems;
-
-    perHost = {
-      fractal = [
-        {
-          networking.hostName = "fractal";
-          services.xserver.videoDrivers = [ "nvidia" ];
-          hardware.nvidia.open = false;
-        }
-      ];
-      zephyrus = [
-        inputs.hardware.nixosModules.asus-zephyrus-ga402
-        {
-          networking.hostName = "zephyrus";
-
-          services.upower.enable = true;
-          services.libinput.enable = true;
-          services.power-profiles-daemon.enable = true;
-
-          hardware.bluetooth.enable = true;
-          hardware.bluetooth.powerOnBoot = false;
-        }
-      ];
-      metabox = [
-        {
-          networking.hostName = "metabox";
-          services.xserver.videoDrivers = [ "nvidia" ];
-          hardware.nvidia.open = true;
-          services.openssh.enable = true;
-        }
-      ];
-    };
   in
   {
     packages = forAllSystems (system:
@@ -81,14 +58,10 @@
         };
       });
 
-    nixosConfigurations = nixpkgs.lib.genAttrs (builtins.attrNames perHost) (hostname:
+    nixosConfigurations = nixpkgs.lib.genAttrs hosts (host:
       nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit inputs outputs; };
-        modules = (perHost.${hostname} or []) ++ [
-          ./nixos/${hostname}.nix
-          # (./nixos + "/${hostname}.nix")
-          ./nixos/core.nix
-        ];
+        specialArgs = { inherit inputs outputs host; };
+        modules = [ ./nixos ];
       });
 
     homeConfigurations = {

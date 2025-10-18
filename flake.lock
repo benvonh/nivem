@@ -245,6 +245,17 @@
         "type": "github"
       }
     },
+    "private": {
+      "locked": {
+        "path": "private",
+        "type": "path"
+      },
+      "original": {
+        "path": "private",
+        "type": "path"
+      },
+      "parent": []
+    },
     "quickshell": {
       "inputs": {
         "nixpkgs": [
@@ -273,6 +284,7 @@
         "home-manager": "home-manager",
         "nixpkgs": "nixpkgs_2",
         "nixvim": "nixvim",
+        "private": "private",
         "silent-sddm": "silent-sddm",
         "zen-browser": "zen-browser"
       }

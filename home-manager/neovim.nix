@@ -1,6 +1,6 @@
 { inputs, ... }:
 {
-  imports = [ inputs.nixvim.homeManagerModules.nixvim ];
+  imports = [ inputs.nixvim.homeModules.nixvim ];
 
   programs.nixvim = {
     enable = true;
@@ -235,15 +235,17 @@
     # TODO: Change?
     plugins.nvim-tree = {
       enable = true;
-      git.ignore = false;
-      hijackCursor = true;
-      diagnostics.enable = true;
-      diagnostics.showOnDirs = true;
-      updateFocusedFile.enable = true;
-      renderer = {
-        icons.gitPlacement = "after";
-        icons.show.folderArrow = false;
-        indentMarkers.enable = false;
+      settings = {
+        hijack_cursor = true;
+        git.ignore = false;
+        diagnostics.enable = true;
+        diagnostics.show_on_dirs = true;
+        # update_focus_file.enable = true;
+        renderer = {
+          icons.git_placement = "after";
+          icons.show.folder_arrow = false;
+          indent_markers.enable = false;
+        };
       };
     };
 

@@ -57,8 +57,8 @@ in
         };
       };
       border = {
-        rounding = 0;
-        thickness = 2;
+        rounding = 15;
+        thickness = 5;
       };
     };
   };
@@ -99,7 +99,6 @@ in
 
       env = [
         "TERM, kitty"
-        "EDITOR, nvim"
         "GTK_THEME, ${theme.name}"
         "XCURSOR_THEME, ${theme.cursor.name}"
         "XCURSOR_SIZE, ${theme.cursor.size}"
@@ -178,10 +177,7 @@ in
       
       master.mfact = 0.6;
 
-      windowrule = [
-        "opacity 0.9, class:kitty"
-        "rounding 15, floating:1"
-      ];
+      windowrule = [ "opacity 0.9, class:kitty" ];
 
       "$ENTER" = 36;
       "$SPACE" = 65;

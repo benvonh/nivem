@@ -1,8 +1,14 @@
-{ inputs, outputs, lib, config, pkgs, ... }:
+{ inputs, outputs, host, lib, config, pkgs, ... }:
 let
   sddm-theme = inputs.silent-sddm.packages.${pkgs.system}.default;
 in
 {
+  imports = [
+    ./${host}/configuration.nix
+    ./${host}/hardware-configuration.nix
+    inputs.home-manager.nixosModules.home-manager
+  ];
+
   ################################################
   #                 NIX SETTINGS                 #
   ################################################
@@ -36,6 +42,10 @@ in
   time.timeZone = "Australia/Brisbane";
 
   networking.networkmanager.enable = true;
+  networking.hosts = {
+    "192.168.0.102" = [ "neuotec.com" ];
+    "192.168.1.88" = [ "neuotec.com" ];
+  };
 
   security.rtkit.enable = true;
 
@@ -85,8 +95,6 @@ in
   ################################################
   #                 HOME MANAGER                 #
   ################################################
-  imports = [ inputs.home-manager.nixosModules.home-manager ];
-  
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
@@ -143,19 +151,21 @@ in
   environment.sessionVariables.XCURSOR_THEME = "Bibata-Modern-Ice";
 
   environment.systemPackages = with pkgs; [
-    bibata-cursors
-    clapper
+    bibata-cursors # Mouse cursor theme
+    clapper # Video player
     discord
     gnome-calculator
     gnome-disk-utility
     gnome-system-monitor
     gpu-screen-recorder-gtk
-    loupe
+    loupe # Image viewer
     mission-center
-    nautilus
+    nautilus # File browser
     obs-studio
-    pavucontrol
+    pavucontrol # Volume control
+    prismlauncher # Minecraft
     sddm-theme
+    sops # Encryption
     vscode
   ];
 
