@@ -37,7 +37,7 @@ in
   ###################################################
   system.stateVersion = "25.05";
 
-  i18n.defaultLocale = "en_AU.UTF-8";
+  i18n.defaultLocale = "en_US.UTF-8";
 
   time.timeZone = "Australia/Brisbane";
 
@@ -82,7 +82,6 @@ in
     enable = true;
     wayland.enable = true;
     theme = sddm-theme.pname;
-    package = pkgs.kdePackages.sddm;
     extraPackages = sddm-theme.propagatedBuildInputs;
     settings = {
       General = {
@@ -116,6 +115,7 @@ in
       isNormalUser = true;
       initialPassword = "nixos";
       extraGroups = [
+        "dialout"
         "networkmanager"
         "wheel"
       ];
@@ -148,24 +148,24 @@ in
   ###############################################
   #                 ENVIRONMENT                 #
   ###############################################
+  services.desktopManager.gnome.enable = true;
+  services.udev.packages = [ pkgs.gnome-settings-daemon ];
+
   environment.sessionVariables.XCURSOR_THEME = "Bibata-Modern-Ice";
 
   environment.systemPackages = with pkgs; [
     bibata-cursors # Mouse cursor theme
     clapper # Video player
     discord
-    gnome-calculator
-    gnome-disk-utility
-    gnome-system-monitor
-    gpu-screen-recorder-gtk
+    gnomeExtensions.appindicator
+    gnomeExtensions.blur-my-shell
+    gnomeExtensions.dash-to-panel
     loupe # Image viewer
     mission-center
-    nautilus # File browser
     obs-studio
     pavucontrol # Volume control
     prismlauncher # Minecraft
     sddm-theme
-    sops # Encryption
     vscode
   ];
 

@@ -67,6 +67,7 @@
     settings = {
       # include = "${../../asset/catppuccin-nivem.conf}";
       cursor_trail = 8;
+      enable_audio_bell = false;
       window_padding_width = 8;
     };
     font = {
