@@ -6,6 +6,8 @@
   boot.kernelModules = [ "tuxedo_keyboards" "tuxedo_io" ];
 
   hardware.nvidia.open = false;
+  hardware.xpadneo.enable = true;
+  hardware.xone.enable = true;
 
   networking.hostName = "metabox";
   networking.firewall.allowedTCPPorts = [ 22 80 443 ];

@@ -116,6 +116,7 @@ in
       initialPassword = "nixos";
       extraGroups = [
         "dialout"
+        "input"
         "networkmanager"
         "wheel"
       ];

@@ -1,5 +1,5 @@
 {
-  description = "My NixOS and Home Manager configurations";
+  description = "NixOS and Home Manager configuration";
 
   inputs = {
     private.url = "path:private";
@@ -45,11 +45,6 @@
     forAllSystems = nixpkgs.lib.genAttrs systems;
   in
   {
-    packages = forAllSystems (system:
-      let pkgs = pkgsFor.${system}; in {
-        cheat = pkgs.callPackage ./cheat {};
-      });
-
     devShells = forAllSystems (system:
       let pkgs = pkgsFor.${system}; in {
         default = pkgs.mkShell {

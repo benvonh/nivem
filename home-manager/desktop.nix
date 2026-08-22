@@ -110,7 +110,6 @@ in
       exec-once = [
         "hyprctl setcursor ${theme.cursor.name} ${theme.cursor.size}"
         "caelestia shell"
-        "${pkgs.nextcloud-client}/bin/nextcloud"
       ];
 
       general = {
